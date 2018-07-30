@@ -1,8 +1,8 @@
 {
-    "name": "Original",
+    "name": "Test theme",
     "version": "5.0",
-    "description": "Original phpMyAdmin theme",
-    "author": "phpMyAdmin developers",
+    "description": "Test theme",
+    "author": "Daniel",
     "url": "https://www.phpmyadmin.net/",
     "supports": ["5.0"]
 }
