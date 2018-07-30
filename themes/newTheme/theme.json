@@ -1,0 +1,8 @@
+{
+    "name": "Test theme",
+    "version": "5.0",
+    "description": "Test theme",
+    "author": "Daniel",
+    "url": "https://www.phpmyadmin.net/",
+    "supports": ["5.0"]
+}
