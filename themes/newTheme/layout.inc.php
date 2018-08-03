@@ -4,74 +4,166 @@
  * configures general layout
  * for detailed layout configuration please refer to the css files
  *
- * @package    PhpMyAdmin-theme
- * @subpackage Original
+ * @package PhpMyAdmin-theme
  */
 declare(strict_types=1);
 
-/**
- * navi frame
+$GLOBALS['cfg']['NaviWidth']                = '250';
+$GLOBALS['cfg']['FontFamily']               = '"Open Sans", "Segoe UI"';
+$GLOBALS['cfg']['FontFamilyLight']          = '"Open Sans Light", "Segoe UI Light", "Segoe UI"; font-weight: 300';
+$GLOBALS['cfg']['FontFamilyFixed']          = 'Consolas, Monospace, "Lucida Grande"';
+
+/* Theme color scheme
+ * Values: "teal", "redmond", "blueeyes", "mono", "win"
+ * Set this value for the desired color scheme
  */
-// navi frame width
-$GLOBALS['cfg']['NaviWidth']                = 240;
 
-// foreground (text) color for the navi frame
-$GLOBALS['cfg']['NaviColor']                = '#000000';
+$scheme                                     = "win";
+$GLOBALS['cfg']['Scheme']                   = $scheme;
 
-// background for the navi frame
-$GLOBALS['cfg']['NaviBackground']           = '#D0DCE0';
+switch ($scheme) {
+    case "win":
+        $GLOBALS['cfg']['NaviColor']                = '#EEEEEE';
+        $GLOBALS['cfg']['NaviBackground']           = '#377796';
+        $GLOBALS['cfg']['NaviBackgroundLight']      = '#428EB4';
+        $GLOBALS['cfg']['NaviPointerColor']         = '#333333';
+        $GLOBALS['cfg']['NaviPointerBackground']    = '#377796';
+        $GLOBALS['cfg']['NaviDatabaseNameColor']    = '#333333';
+        $GLOBALS['cfg']['NaviHoverBackground']      = '#428EB4';
+        $GLOBALS['cfg']['MainColor']                = '#444444';
+        $GLOBALS['cfg']['MainBackground']           = '#FFFFFF';
+        $GLOBALS['cfg']['BrowsePointerColor']       = '#377796';
+        $GLOBALS['cfg']['BrowseMarkerColor']        = '#000000';
+        $GLOBALS['cfg']['BrowseWarningColor']       = '#D44A26';
+        $GLOBALS['cfg']['BrowseSuccessColor']       = '#01A31C';
+        $GLOBALS['cfg']['BrowseGrayColor']          = '#CCCCCC';
+        $GLOBALS['cfg']['BrowseMarkerBackground']   = '#EEEEEE';
+        $GLOBALS['cfg']['BorderColor']              = '#DDDDDD';
+        $GLOBALS['cfg']['ButtonColor']              = '#FFFFFF';
+        $GLOBALS['cfg']['ButtonBackground']         = '#377796';
+        $GLOBALS['cfg']['ButtonHover']              = '#428EB4';
+        $GLOBALS['cfg']['ThBackground']             = '#F7F7F7';
+        $GLOBALS['cfg']['ThDisabledBackground']     = '#F3F3F3';
+        $GLOBALS['cfg']['ThColor']                  = '#666666';
+        $GLOBALS['cfg']['ThPointerColor']           = '#000000';
+        $GLOBALS['cfg']['BgOne']                    = '#F7F7F7';
+        $GLOBALS['cfg']['BgTwo']                    = '#FFFFFF';
+        $GLOBALS['cfg']['BlueHeader']               = '#3A7EAD';
+        break;
 
-// foreground (text) color of the pointer in navi frame
-$GLOBALS['cfg']['NaviPointerColor']         = '#000000';
-// background of the pointer in navi frame
-$GLOBALS['cfg']['NaviPointerBackground']    = '#9999CC';
+    case "teal":
+        $GLOBALS['cfg']['NaviColor']                = '#FFFFFF';
+        $GLOBALS['cfg']['NaviBackground']           = '#004D60';
+        $GLOBALS['cfg']['NaviBackgroundLight']      = '#04627C';
+        $GLOBALS['cfg']['NaviPointerColor']         = '#666666';
+        $GLOBALS['cfg']['NaviPointerBackground']    = '#004D60';
+        $GLOBALS['cfg']['NaviDatabaseNameColor']    = '#FFFFFF';
+        $GLOBALS['cfg']['NaviHoverBackground']      = '#216475';
+        $GLOBALS['cfg']['MainColor']                = '#444444';
+        $GLOBALS['cfg']['MainBackground']           = '#FFFFFF';
+        $GLOBALS['cfg']['BrowsePointerColor']       = '#004d60';
+        $GLOBALS['cfg']['BrowseMarkerColor']        = '#000000';
+        $GLOBALS['cfg']['BrowseWarningColor']       = '#D44A26';
+        $GLOBALS['cfg']['BrowseSuccessColor']       = '#01A31C';
+        $GLOBALS['cfg']['BrowseGrayColor']          = '#CCCCCC';
+        $GLOBALS['cfg']['BrowseMarkerBackground']   = '#EEEEEE';
+        $GLOBALS['cfg']['BorderColor']              = '#DDDDDD';
+        $GLOBALS['cfg']['ButtonColor']              = '#FFFFFF';
+        $GLOBALS['cfg']['ButtonBackground']         = '#AAAAAA';
+        $GLOBALS['cfg']['ButtonHover']              = '#000000';
+        $GLOBALS['cfg']['ThBackground']             = '#F7F7F7';
+        $GLOBALS['cfg']['ThDisabledBackground']     = '#F3F3F3';
+        $GLOBALS['cfg']['ThColor']                  = '#666666';
+        $GLOBALS['cfg']['ThPointerColor']           = '#000000';
+        $GLOBALS['cfg']['BgOne']                    = '#F7F7F7';
+        $GLOBALS['cfg']['BgTwo']                    = '#FFFFFF';
+        $GLOBALS['cfg']['BlueHeader']               = '#3A7EAD';
+        break;
 
-/**
- * main frame
- */
-// foreground (text) color for the main frame
-$GLOBALS['cfg']['MainColor']                = '#000000';
+    case "redmond":
+        $GLOBALS['cfg']['NaviColor']                = '#FFFFFF';
+        $GLOBALS['cfg']['NaviBackground']           = '#780505';
+        $GLOBALS['cfg']['NaviBackgroundLight']      = '#A10707';
+        $GLOBALS['cfg']['NaviPointerColor']         = '#666666';
+        $GLOBALS['cfg']['NaviPointerBackground']    = '#780505';
+        $GLOBALS['cfg']['NaviDatabaseNameColor']    = '#FFFFFF';
+        $GLOBALS['cfg']['NaviHoverBackground']      = '#A10707';
+        $GLOBALS['cfg']['MainColor']                = '#444444';
+        $GLOBALS['cfg']['MainBackground']           = '#FFFFFF';
+        $GLOBALS['cfg']['BrowsePointerColor']       = '#780505';
+        $GLOBALS['cfg']['BrowseMarkerColor']        = '#000000';
+        $GLOBALS['cfg']['BrowseWarningColor']       = '#D44A26';
+        $GLOBALS['cfg']['BrowseSuccessColor']       = '#01A31C';
+        $GLOBALS['cfg']['BrowseGrayColor']          = '#CCCCCC';
+        $GLOBALS['cfg']['BrowseMarkerBackground']   = '#EEEEEE';
+        $GLOBALS['cfg']['BorderColor']              = '#DDDDDD';
+        $GLOBALS['cfg']['ButtonColor']              = '#FFFFFF';
+        $GLOBALS['cfg']['ButtonBackground']         = '#AAAAAA';
+        $GLOBALS['cfg']['ButtonHover']              = '#000000';
+        $GLOBALS['cfg']['ThBackground']             = '#F7F7F7';
+        $GLOBALS['cfg']['ThDisabledBackground']     = '#F3F3F3';
+        $GLOBALS['cfg']['ThColor']                  = '#666666';
+        $GLOBALS['cfg']['ThPointerColor']           = '#000000';
+        $GLOBALS['cfg']['BgOne']                    = '#F7F7F7';
+        $GLOBALS['cfg']['BgTwo']                    = '#FFFFFF';
+        $GLOBALS['cfg']['BlueHeader']               = '#3A7EAD';
+        break;
 
-// background for the main frame
-$GLOBALS['cfg']['MainBackground']           = '#F5F5F5';
+    case "blueeyes":
+        $GLOBALS['cfg']['NaviColor']                = '#FFFFFF';
+        $GLOBALS['cfg']['NaviBackground']           = '#377796';
+        $GLOBALS['cfg']['NaviBackgroundLight']      = '#428EB4';
+        $GLOBALS['cfg']['NaviPointerColor']         = '#666666';
+        $GLOBALS['cfg']['NaviPointerBackground']    = '#377796';
+        $GLOBALS['cfg']['NaviDatabaseNameColor']    = '#FFFFFF';
+        $GLOBALS['cfg']['NaviHoverBackground']      = '#428EB4';
+        $GLOBALS['cfg']['MainColor']                = '#444444';
+        $GLOBALS['cfg']['MainBackground']           = '#FFFFFF';
+        $GLOBALS['cfg']['BrowsePointerColor']       = '#377796';
+        $GLOBALS['cfg']['BrowseMarkerColor']        = '#000000';
+        $GLOBALS['cfg']['BrowseWarningColor']       = '#D44A26';
+        $GLOBALS['cfg']['BrowseSuccessColor']       = '#01A31C';
+        $GLOBALS['cfg']['BrowseGrayColor']          = '#CCCCCC';
+        $GLOBALS['cfg']['BrowseMarkerBackground']   = '#EEEEEE';
+        $GLOBALS['cfg']['BorderColor']              = '#DDDDDD';
+        $GLOBALS['cfg']['ButtonColor']              = '#FFFFFF';
+        $GLOBALS['cfg']['ButtonBackground']         = '#377796';
+        $GLOBALS['cfg']['ButtonHover']              = '#000000';
+        $GLOBALS['cfg']['ThBackground']             = '#F7F7F7';
+        $GLOBALS['cfg']['ThDisabledBackground']     = '#F3F3F3';
+        $GLOBALS['cfg']['ThColor']                  = '#666666';
+        $GLOBALS['cfg']['ThPointerColor']           = '#000000';
+        $GLOBALS['cfg']['BgOne']                    = '#F7F7F7';
+        $GLOBALS['cfg']['BgTwo']                    = '#FFFFFF';
+        $GLOBALS['cfg']['BlueHeader']               = '#3A7EAD';
+        break;
 
-// foreground (text) color of the pointer in browse mode
-$GLOBALS['cfg']['BrowsePointerColor']       = '#000000';
-
-// background of the pointer in browse mode
-$GLOBALS['cfg']['BrowsePointerBackground']  = '#CCFFCC';
-
-// foreground (text) color of the marker (visually marks row by clicking on it)
-// in browse mode
-$GLOBALS['cfg']['BrowseMarkerColor']        = '#000000';
-
-// background of the marker (visually marks row by clicking on it) in browse mode
-$GLOBALS['cfg']['BrowseMarkerBackground']   = '#FFCC99';
-
-/**
- * fonts
- */
-/**
- * the font family as a valid css font family value,
- * if not set the browser default will be used
- * (depending on browser, DTD and system settings)
- */
-$GLOBALS['cfg']['FontFamily']           = 'sans-serif';
-/**
- * fixed width font family, used in textarea
- */
-$GLOBALS['cfg']['FontFamilyFixed']      = 'monospace';
-
-/**
- * tables
- */
-// border
-$GLOBALS['cfg']['Border']               = 0;
-// table header and footer color
-$GLOBALS['cfg']['ThBackground']         = '#D3DCE3';
-// table header and footer background
-$GLOBALS['cfg']['ThColor']              = '#000000';
-// table data row background
-$GLOBALS['cfg']['BgOne']                = '#E5E5E5';
-// table data row background, alternate
-$GLOBALS['cfg']['BgTwo']                = '#D5D5D5';
+    case "mono":
+        $GLOBALS['cfg']['NaviColor']                = '#FFFFFF';
+        $GLOBALS['cfg']['NaviBackground']           = '#666666';
+        $GLOBALS['cfg']['NaviBackgroundLight']      = '#999999';
+        $GLOBALS['cfg']['NaviPointerColor']         = '#666666';
+        $GLOBALS['cfg']['NaviPointerBackground']    = '#666666';
+        $GLOBALS['cfg']['NaviDatabaseNameColor']    = '#FFFFFF';
+        $GLOBALS['cfg']['NaviHoverBackground']      = '#999999';
+        $GLOBALS['cfg']['MainColor']                = '#444444';
+        $GLOBALS['cfg']['MainBackground']           = '#FFFFFF';
+        $GLOBALS['cfg']['BrowsePointerColor']       = '#666666';
+        $GLOBALS['cfg']['BrowseMarkerColor']        = '#000000';
+        $GLOBALS['cfg']['BrowseWarningColor']       = '#666666';
+        $GLOBALS['cfg']['BrowseSuccessColor']       = '#888888';
+        $GLOBALS['cfg']['BrowseGrayColor']          = '#CCCCCC';
+        $GLOBALS['cfg']['BrowseMarkerBackground']   = '#EEEEEE';
+        $GLOBALS['cfg']['BorderColor']              = '#DDDDDD';
+        $GLOBALS['cfg']['ButtonColor']              = '#FFFFFF';
+        $GLOBALS['cfg']['ButtonBackground']         = '#AAAAAA';
+        $GLOBALS['cfg']['ButtonHover']              = '#000000';
+        $GLOBALS['cfg']['ThBackground']             = '#F7F7F7';
+        $GLOBALS['cfg']['ThDisabledBackground']     = '#F3F3F3';
+        $GLOBALS['cfg']['ThColor']                  = '#666666';
+        $GLOBALS['cfg']['ThPointerColor']           = '#000000';
+        $GLOBALS['cfg']['BgOne']                    = '#F7F7F7';
+        $GLOBALS['cfg']['BgTwo']                    = '#FFFFFF';
+        $GLOBALS['cfg']['BlueHeader']               = '#555555';
+        break;
+}
