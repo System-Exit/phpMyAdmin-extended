@@ -2349,9 +2349,9 @@ input[type=date].invalid_value
     margin: 0;
     background-color: <?php echo $GLOBALS['cfg']['NaviColor']; ?>;
     color: <?php echo $GLOBALS['cfg']['MainColor']; ?>;
-    padding: 10px !important;
+    padding: 14px !important;
     border: none;
-    height: 19px;
+    height: 24px;
 }
 
 .dismissable
