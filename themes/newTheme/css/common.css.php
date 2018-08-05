@@ -197,7 +197,7 @@ body#loginform div.container:before
 
 body#loginform h1
 {
-    display: inline-block;
+    display: none;
     text-align: left;
     color: <?php echo $GLOBALS['cfg']['MainBackground']; ?>;
     font-size: 2.5em;
@@ -208,7 +208,13 @@ body#loginform h1
 
 body#loginform a.logo
 {
-    display: none;
+    display: inline;
+}
+
+#imLogo
+{
+	margin: 10px;;
+	width: 250px;
 }
 
 body#loginform fieldset legend
