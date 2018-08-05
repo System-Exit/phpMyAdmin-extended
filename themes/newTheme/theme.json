@@ -1,8 +1,8 @@
 {
-    "name": "Test theme",
+    "name": "RMIT Theme",
     "version": "5.0",
-    "description": "Test theme",
-    "author": "Daniel",
+    "description": "Test theme for RMIT.",
+    "author": "The Giganibbles",
     "url": "https://www.phpmyadmin.net/",
     "supports": ["5.0"]
 }
