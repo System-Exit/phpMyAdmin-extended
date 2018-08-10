@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace PhpMyAdmin\Controllers\Giganibbles;
 
 use PhpMyAdmin\Controllers\Controller;
+use PhpMyAdmin\Relation;
 use PhpMyAdmin\Response;
 
 /**
@@ -22,9 +23,21 @@ use PhpMyAdmin\Response;
 class ServerMessagesController extends Controller
 {
 
+    protected $relation;
+
+    protected $user;
+
+    protected $result;
+
     public function indexAction()
     {
-        // function processing goes here.
+        global $cfg;
+        // Connect to sql
+        $relation = new Relation();
+        // Get current user
+        $user = $cfg['Server']['user'];
+        // Get messages from database
+        $result = $relation->queryAsControlUser("SELECT `message` FROM `pma__messages` WHERE `receiver` LIKE `$user`");
 
         $response = Response::getInstance();
 
@@ -32,8 +45,15 @@ class ServerMessagesController extends Controller
             'Giganibbles/server_messages',
             [
                 // vars go here!
+                'result' => $this->result
             ]
         ));
+
+         return $result->num_rows;
     }
 
 }
+
+$c = new ServerMessagesController();
+$r = $c->indexAction();
+echo $r;
