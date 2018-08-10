@@ -1,7 +1,7 @@
 <?php
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
- * Navigation styles for the Metro theme
+ * Navigation styles for the RMIT theme
  *
  * @package PhpMyAdmin-theme
  */

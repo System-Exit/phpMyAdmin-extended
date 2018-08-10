@@ -1,7 +1,7 @@
 <?php
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
- * Common styles for the Metro theme
+ * Common styles for the RMIT theme
  *
  * @package PhpMyAdmin-theme
  */
@@ -58,11 +58,11 @@ table
 @font-face {
     font-family: 'IcoMoon';
     src: local('☺');
-    src: url('./themes/metro/fonts/IcoMoon.eot');
-    src: url('./themes/metro/fonts/IcoMoon.eot?#iefix') format('embedded-opentype'),
-        url('./themes/metro/fonts/IcoMoon.svg#IcoMoon') format('svg'),
-        url('./themes/metro/fonts/IcoMoon.woff') format('woff'),
-        url('./themes/metro/fonts/IcoMoon.ttf') format('truetype');
+    src: url('./themes/newTheme/fonts/IcoMoon.eot');
+    src: url('./themes/newTheme/fonts/IcoMoon.eot?#iefix') format('embedded-opentype'),
+        url('./themes/newTheme/fonts/IcoMoon.svg#IcoMoon') format('svg'),
+        url('./themes/newTheme/fonts/IcoMoon.woff') format('woff'),
+        url('./themes/newTheme/fonts/IcoMoon.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -70,10 +70,10 @@ table
 @font-face {
     font-family: 'Open Sans';
     src: local('☺'), local('Open Sans'), local('OpenSans');
-    src: url('./themes/metro/fonts/opensans-regular-webfont.eot');
-    src: url('./themes/metro/fonts/opensans-regular-webfont.eot?#iefix') format('embedded-opentype'),
-        url('./themes/metro/fonts/opensans-regular-webfont.woff') format('woff'),
-        url('./themes/metro/fonts/opensans-regular-webfont.ttf') format('truetype');
+    src: url('./themes/newTheme/fonts/opensans-regular-webfont.eot');
+    src: url('./themes/newTheme/fonts/opensans-regular-webfont.eot?#iefix') format('embedded-opentype'),
+        url('./themes/newTheme/fonts/opensans-regular-webfont.woff') format('woff'),
+        url('./themes/newTheme/fonts/opensans-regular-webfont.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -81,10 +81,10 @@ table
 @font-face {
     font-family: 'Open Sans Light';
     src: local('☺'), local('Open Sans Light'), local('OpenSans-Light');
-    src: url('./themes/metro/fonts/opensans-light-webfont.eot');
-    src: url('./themes/metro/fonts/opensans-light-webfont.eot?#iefix') format('embedded-opentype'),
-        url('./themes/metro/fonts/opensans-light-webfont.woff') format('woff'),
-        url('./themes/metro/fonts/opensans-light-webfont.ttf') format('truetype');
+    src: url('./themes/newTheme/fonts/opensans-light-webfont.eot');
+    src: url('./themes/newTheme/fonts/opensans-light-webfont.eot?#iefix') format('embedded-opentype'),
+        url('./themes/newTheme/fonts/opensans-light-webfont.woff') format('woff'),
+        url('./themes/newTheme/fonts/opensans-light-webfont.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -92,10 +92,10 @@ table
 @font-face {
     font-family: 'Open Sans Bold';
     src: local('☺'), local('Open Sans Bold'), local('OpenSans-Bold');
-    src: url('./themes/metro/fonts/opensans-bold-webfont.eot');
-    src: url('./themes/metro/fonts/opensans-bold-webfont.eot?#iefix') format('embedded-opentype'),
-        url('./themes/metro/fonts/opensans-bold-webfont.woff') format('woff'),
-        url('./themes/metro/fonts/opensans-bold-webfont.ttf') format('truetype');
+    src: url('./themes/newTheme/fonts/opensans-bold-webfont.eot');
+    src: url('./themes/newTheme/fonts/opensans-bold-webfont.eot?#iefix') format('embedded-opentype'),
+        url('./themes/newTheme/fonts/opensans-bold-webfont.woff') format('woff'),
+        url('./themes/newTheme/fonts/opensans-bold-webfont.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -103,10 +103,10 @@ table
 @font-face {
     font-family: 'Open Sans Extrabold';
     src: local('☺'), local('Open Sans Extrabold'), local('OpenSans-Extrabold');
-    src: url('./themes/metro/fonts/opensans-extrabold-webfont.eot');
-    src: url('./themes/metro/fonts/opensans-extrabold-webfont.eot?#iefix') format('embedded-opentype'),
-        url('./themes/metro/fonts/opensans-extrabold-webfont.woff') format('woff'),
-        url('./themes/metro/fonts/opensans-extrabold-webfont.ttf') format('truetype');
+    src: url('./themes/newTheme/fonts/opensans-extrabold-webfont.eot');
+    src: url('./themes/newTheme/fonts/opensans-extrabold-webfont.eot?#iefix') format('embedded-opentype'),
+        url('./themes/newTheme/fonts/opensans-extrabold-webfont.woff') format('woff'),
+        url('./themes/newTheme/fonts/opensans-extrabold-webfont.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -1257,7 +1257,7 @@ fieldset.caution li:before
 
 fieldset.caution li a:nth-child(2) img
 {
-    background: url('./themes/metro/img/s_info.png') !important;
+    background: url('./themes/newTheme/img/s_info.png') !important;
 }
 
 #tbl_maintenance li a
