@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace PhpMyAdmin;
 
 use PhpMyAdmin\DatabaseInterface;
+use PhpMyAdmin\Giganibbles\MenuExtension;
 use PhpMyAdmin\Relation;
 use PhpMyAdmin\Tracker;
 use PhpMyAdmin\Url;
@@ -124,6 +125,17 @@ class Menu
         }
 
         $allowedTabs = $this->_getAllowedTabs($level);
+
+        // menu extension
+        $tabs = array_merge(
+            $tabs,
+            MenuExtension::getMenuTabs($level)
+        );
+        $allowedTabs = array_merge(
+            $allowedTabs,
+            MenuExtension::getAllowedTabs($level)
+        );
+
         foreach ($tabs as $key => $value) {
             if (! array_key_exists($key, $allowedTabs)) {
                 unset($tabs[$key]);
