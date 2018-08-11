@@ -26,10 +26,7 @@ class ServerMessagesController extends Controller
     protected $user;
     protected $query;
     protected $result;
-
-    protected $sender;
-    protected $timestamp;
-    protected $message;
+    protected $messages;
 
     public function indexAction()
     {
@@ -41,14 +38,30 @@ class ServerMessagesController extends Controller
         $query = "SELECT msg.receiver FROM phpmyadmin.pma__messages msg WHERE msg.receiver LIKE '$user'";
         $relation = new Relation();
         $result = $relation->queryAsControlUser($query);
+        // Extract messages from query result, setting message as false if none are present
+        if($result->num_rows > 0)
+        {
+            $i = 0;
+            while($row = $result->fetch_assoc())
+            {
+                $messages[$i]['message'] = $row['message'];
+                $messages[$i]['sender'] = $row['sender'];
+                $messages[$i]['timestamp'] = $row['timestamp'];
+                $i++;
+            }
+        }
+        else
+        {
+            $messages = false;
+        }
 
         $response = Response::getInstance();
 
         $response->addHTML($this->template->render(
             'Giganibbles/server_messages',
             [
-                // vars go here!
-                'result' => $result->num_rows
+                // Passes messages array
+                'messages' => $messages
             ]
         ));
     }
