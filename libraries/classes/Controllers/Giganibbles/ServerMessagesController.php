@@ -35,7 +35,7 @@ class ServerMessagesController extends Controller
         // Get current user
         $user = $cfg['Server']['user'];
         // Query for all messages sent to current user
-        $query = "SELECT msg.receiver FROM phpmyadmin.pma__messages msg WHERE msg.receiver LIKE '$user'";
+        $query = "SELECT msg.message, msg.sender, msg.timestamp  FROM phpmyadmin.pma__messages msg WHERE msg.receiver LIKE '$user'";
         $relation = new Relation();
         $result = $relation->queryAsControlUser($query);
         // Extract messages from query result, setting message as false if none are present
