@@ -34,16 +34,14 @@ class ServerMessagesController extends Controller
     public function indexAction()
     {
         global $cfg;
-        // Get access to database
-        /*DatabaseInterface::load(); (This line might be needed?)*/
-        $this->dbi->connect(DatabaseInterface::CONNECT_CONTROL);
-        $this->dbi->selectDb('phpmyadmin');
+
         // Get current user
         $user = $cfg['Server']['user'];
-        // Get messages from database
-        $query = "SELECT `msg`.`receiver` FROM `pma__messages` `msg` WHERE `msg`.`receiver` LIKE '$user'";
-        $result = $this->dbi->query($query);
-        
+        // Query for all messages sent to current user
+        $query = "SELECT msg.receiver FROM phpmyadmin.pma__messages msg WHERE msg.receiver LIKE '$user'";
+        $relation = new Relation();
+        $result = $relation->queryAsControlUser($query);
+
         $response = Response::getInstance();
 
         $response->addHTML($this->template->render(
