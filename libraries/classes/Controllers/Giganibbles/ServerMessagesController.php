@@ -103,8 +103,8 @@ class ServerMessagesController extends Controller
         }
 
         $sender = $cfg['Server']['user'];
-        $receiver = $_POST['form_receiver'];
-        $message = $_POST['form_message'];
+        $receiver = $this->dbi->escapeString($_POST['form_receiver']);
+        $message = $this->dbi->escapeString($_POST['form_message']);
 
         // checks if user is current
         if (empty($sender)) {
