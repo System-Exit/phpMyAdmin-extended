@@ -9,12 +9,11 @@ declare(strict_types=1);
 
 namespace PhpMyAdmin\Controllers\Giganibbles;
 
+use phpDocumentor\Reflection\Types\Boolean;
 use PhpMyAdmin\Controllers\Controller;
-use PhpMyAdmin\DatabaseInterface;
 use PhpMyAdmin\Relation;
 use PhpMyAdmin\Response;
 use PhpMyAdmin\Message;
-use PhpMyAdmin\Util;
 
 /**
  * Class ServerMessagesController
@@ -34,6 +33,23 @@ class ServerMessagesController extends Controller
     {
         global $cfg;
 
+        // pass to ajax function if page call is an ajax request
+        // Note: error handling and validation is done in sendAction().
+        if ($this->response->isAjax()
+            && isset($_POST['form_send_check'])
+        ) {
+            $this->sendAction();
+            return;
+        }
+
+        // get new response
+        $response = $this->response;
+
+        // upload script
+        $header = $response->getHeader();
+        $scripts = $header->getScripts();
+        $scripts->addFile('Giganibbles/server_messages.js');
+
         // Get current user
         $user = $cfg['Server']['user'];
         // Query for all messages sent to current user
@@ -41,23 +57,19 @@ class ServerMessagesController extends Controller
         $relation = new Relation();
         $result = $relation->queryAsControlUser($query);
         // Extract messages from query result, setting message as false if none are present
-        if($result->num_rows > 0)
-        {
+        if($result !== false && $result->num_rows > 0) {
             $i = 0;
-            while($row = $result->fetch_assoc())
-            {
+            $messages = [];
+            while($row = $result->fetch_assoc()) {
                 $messages[$i]['message'] = $row['message'];
                 $messages[$i]['sender'] = $row['sender'];
                 $messages[$i]['timestamp'] = $row['timestamp'];
                 $i++;
             }
-        }
-        else
-        {
+            $messages = array_reverse($messages);
+        } else {
             $messages = false;
         }
-
-        $response = Response::getInstance();
 
         $response->addHTML($this->template->render(
             'Giganibbles/server_messages',
@@ -78,68 +90,67 @@ class ServerMessagesController extends Controller
     public function sendAction()
     {
         global $cfg;
-        $response = Response::getInstance();
+        $response = $this->response;
 
         // checks if all data is set. If not, throws an error.
-        if (empty($_POST['sender'])
-            || empty($_POST['receiver'])
-            || empty($_POST['message'])
+        if (empty($_POST['form_receiver'])
+            || empty($_POST['form_message'])
         ) {
             $response->setRequestStatus(false);
-            $message = Message::error(__('An unexpected error occurred.'));
-            $response->addJSON('message', $message);
+            //$message_out = Message::error(__('Error: Message and receiver need to be filled out.'));
+            //$response->addJSON('error', $message_out);
             return;
         }
 
-        $sender = $_POST['sender'];
-        $receiver = $_POST['receiver'];
-        $message = $_POST['message'];
+        $sender = $cfg['Server']['user'];
+        $receiver = $_POST['form_receiver'];
+        $message = $_POST['form_message'];
 
         // checks if user is current
-        if ($cfg['Server']['user'] != $sender) {
+        if (empty($sender)) {
             $response->setRequestStatus(false);
-            $message = Message::error(__('Error: there was an issue when checking the current user.'));
-            $response->addJSON('message', $message);
+            $message_out = Message::error(__('Error: there was an issue when checking the current user.'));
+            $response->addJSON('error', $message_out);
             return;
         }
 
         // check if receiver exists
         $relation = new Relation();
         $receiver_result = $relation->queryAsControlUser(
-            "SELECT `User` FROM `mysql.user` WHERE `User` LIKE '$receiver';",
-            false);
-        if (empty($receiver_result) || $receiver_result->num_rows == 0)
-        {
+            "SELECT User FROM mysql.user WHERE User LIKE '$receiver';",
+            true);
+        if (empty($receiver_result) || $receiver_result->num_rows == 0) {
             $response->setRequestStatus(false);
-            $message = Message::error(__('Error: the receiver is not a valid user.'));
-            $response->addJSON('message', $message);
+            $message_out = Message::error(__('Error: the receiver is not a valid user.'));
+            $response->addJSON('error', $message_out);
             return;
         }
 
         // check if message is empty
-        if (empty($message))
-        {
+        if (empty($message)) {
             $response->setRequestStatus(false);
-            $message = Message::error(__('Error: the message has not been set.'));
-            $response->addJSON('message', $message);
+            $message_out = Message::error(__('Error: the message has not been set.'));
+            $response->addJSON('error', $message_out);
             return;
         }
 
         // create new message
         $success = $relation->queryAsControlUser(
-            "INSERT INTO `phpmyadmin.pma__messages` VALUES " .
-                "($sender, $receiver, $message, now());"
+            "INSERT INTO phpmyadmin.pma__messages " .
+                "(`sender`, `receiver`, `timestamp`, `message`, `seen`)" .
+                "VALUES ('$sender', '$receiver', now(), '$message', 0);",
+            true
         );
 
-        if ($success === false)
-        {
+        if ($success === false) {
             $response->setRequestStatus(false);
-            $message = Message::error(__('Could not send the message.'));
-            $response->addJSON('message', $message);
+            $message_out = Message::error(__('Could not send the message.'));
+            $response->addJSON('error', $message_out);
         } else {
             $response->setRequestStatus(true);
-            $message = Message::success(__('The message has been sent.'));
-            $response->addJSON('message', $message);
+            // TODO when messages are sent they stop all other content from displaying.
+            // $message_out = Message::success(__('The message has been sent.'));
+            // $response->addJSON('message', $message_out);
         }
 
     }

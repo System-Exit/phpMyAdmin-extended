@@ -3969,3 +3969,55 @@ body .ui-dialog .ui-dialog-buttonpane button.ui-state-active {
     background-color: #333;
     border: 1px solid #333;
 }
+
+.message_box {
+    border: 1px solid #606060;
+    overflow-y: scroll;
+    margin-bottom: 10px;
+    margin-top: 5px;
+    display: block;
+    width: 600px;
+    min-width: 300px;
+    height: 400px;
+    min-height: 50px;
+    resize: both;
+}
+
+.message_body {
+    padding: 5px;
+    border-bottom: 1px solid #AAAAAA;
+}
+
+.message_sender {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.message_timestamp {
+    display: inline-block;
+    color: #666666;
+    font-weight: lighter;
+}
+
+.message_sender b {
+    font-weight: bold;
+}
+
+.message_timestamp b {
+    font-weight: normal;
+}
+
+.message_message {
+    display: block;
+    margin-top: 5px;
+    border-top: 1px solid #EEEEEE;
+}
+
+.form_send_message {
+
+}
+
+#form_message {
+    min-width: 600px;
+    height: 100px;
+}

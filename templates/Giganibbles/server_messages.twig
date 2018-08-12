@@ -1,1 +1,36 @@
-{# template goes here! #}
+<h2 id="message_header">Your Messages</h2>
+<div id="message_sent_note" class="success hide">
+    <p>Your message has been sent.</p>
+</div>
+<group id="message_received"><!-- Begin message display -->
+    <h3>Received messages:</h3>
+    <ul id="message_box" class="message_box">
+        {% if messages|length == 0 %}
+            <li id="no_messages" class="no_messages">You have no messages!</li>
+        {% else %}
+            {% for mes in messages %}
+                <li class="message_body">
+                    <p class="message_sender">Sender: <strong>{{ mes.sender }}</strong></p>
+                    <p class="message_timestamp">Time: <strong>{{ mes.timestamp }}</strong></p>
+                    <p class="message_message">{{ mes.message }}</p>
+                </li>
+            {% endfor %}
+        {% endif %}
+    </ul>
+</group>
+<group id="message_send"><!-- begin message sending -->
+    <h3>Send message:</h3>
+    <form id="sendMessageForm" action="server_messages.php" method="post"><!-- Begin message input -->
+        <input name="form_send_check" type="hidden" />
+        <ul>
+            <li>
+                <textarea id="form_message" name="form_message" placeholder="Enter message here..."></textarea>
+            </li>
+            <li>
+                <label for="Receiver">Receiver</label>
+                <input title="Receiver" id="form_receiver" name="form_receiver" type="text" />
+                <input type="submit" value="Send" />
+            </li>
+        </ul>
+    </form>
+</group>
