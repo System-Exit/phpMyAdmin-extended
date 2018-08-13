@@ -38,7 +38,7 @@ class Users
         if ($GLOBALS['dbi']->isSuperuser()) {
             $items[] = [
                 'name' => __('User groups'),
-                'url' => 'server_user_groups.php',
+                'url' => 'server_privileges.php',
                 'params' => Url::getCommon(),
             ];
         }
