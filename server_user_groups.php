@@ -37,7 +37,8 @@ if (! $GLOBALS['dbi']->isSuperuser()) {
 }
 
 $response->addHTML('<div>');
-$response->addHTML(Users::getHtmlForSubMenusOnUsersPage('server_user_groups.php'));
+/* Commented out HTML for submenus
+$response->addHTML(Users::getHtmlForSubMenusOnUsersPage('server_user_groups.php'));/
 
 /**
  * Delete user group

@@ -13,6 +13,7 @@ use PhpMyAdmin\Relation;
 use PhpMyAdmin\Response;
 use PhpMyAdmin\Server\Common;
 use PhpMyAdmin\Server\Privileges;
+use PhpMyAdmin\Server\UserGroups;
 use PhpMyAdmin\Server\Users;
 use PhpMyAdmin\Template;
 
@@ -40,13 +41,15 @@ $scripts->addFile('vendor/zxcvbn.js');
 
 $template = new Template();
 $serverPrivileges = new Privileges($template);
+$serverUserGroups = new UserGroups();
 
 if ((isset($_REQUEST['viewing_mode'])
     && $_REQUEST['viewing_mode'] == 'server')
     && $GLOBALS['cfgRelation']['menuswork']
 ) {
     $response->addHTML('<div>');
-    $response->addHTML(Users::getHtmlForSubMenusOnUsersPage('server_privileges.php'));
+    /* Commented out HTML for submenus
+    $response->addHTML(Users::getHtmlForSubMenusOnUsersPage('server_privileges.php')); */
 }
 
 /**
@@ -446,6 +449,9 @@ if (isset($_REQUEST['adduser'])) {
         // No username is given --> display the overview
         $response->addHTML(
             $serverPrivileges->getHtmlForUserOverview($pmaThemeImage, $text_dir)
+        );
+        $response->addHTML(
+            $serverUserGroups->getHtmlForUserGroupsTable()
         );
     } elseif (!empty($routinename)) {
         $response->addHTML(
