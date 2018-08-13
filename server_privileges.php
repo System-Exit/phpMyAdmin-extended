@@ -448,9 +448,7 @@ if (isset($_REQUEST['adduser'])) {
     if (! isset($username)) {
         // No username is given --> display the overview
         $response->addHTML(
-            $serverPrivileges->getHtmlForUserOverview($pmaThemeImage, $text_dir)
-        );
-        $response->addHTML(
+            $serverPrivileges->getHtmlForUserOverview($pmaThemeImage, $text_dir).
             $serverUserGroups->getHtmlForUserGroupsTable()
         );
     } elseif (!empty($routinename)) {
