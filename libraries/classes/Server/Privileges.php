@@ -5623,7 +5623,8 @@ class Privileges
 
         $html_output .= '<fieldset id="fieldset_add_user_group">';
         $html_output .= '<a href="server_privileges.php'
-            . Url::getCommon(['addUserGroup' => 1]) . '">'
+            . Url::getCommon(['addUserGroup' => 1])
+            . '">'
             . Util::getIcon('b_usradd')
             . __('Add user group') . '</a>';
         $html_output .= '</fieldset>';

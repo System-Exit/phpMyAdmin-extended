@@ -46,8 +46,6 @@ if ((isset($_REQUEST['viewing_mode'])
     && $GLOBALS['cfgRelation']['menuswork']
 ) {
     $response->addHTML('<div>');
-    /* Commented out HTML for submenus
-    $response->addHTML(Users::getHtmlForSubMenusOnUsersPage('server_privileges.php')); */
 }
 
 /**
@@ -349,6 +347,27 @@ if ($response->isAjax()
 }
 
 /**
+ * Delete user group
+ */
+if (! empty($_REQUEST['deleteUserGroup'])) {
+    Privileges::delete($_REQUEST['userGroup']);
+}
+
+/**
+ * Add a new user group
+ */
+if (! empty($_REQUEST['addUserGroupSubmit'])) {
+    Privileges::edit($_REQUEST['userGroup'], true);
+}
+
+/**
+ * Update a user group
+ */
+if (! empty($_REQUEST['editUserGroupSubmit'])) {
+    Privileges::edit($_REQUEST['userGroup']);
+}
+
+/**
  * Displays the links
  */
 if (isset($_REQUEST['viewing_mode']) && $_REQUEST['viewing_mode'] == 'db') {
@@ -375,7 +394,8 @@ if (isset($_REQUEST['viewing_mode']) && $_REQUEST['viewing_mode'] == 'db') {
     $content = ob_get_contents();
     ob_end_clean();
     $response->addHTML($content . "\n");
-} else {
+}
+else {
     if (! empty($GLOBALS['message'])) {
         $response->addHTML(PhpMyAdmin\Util::getMessage($GLOBALS['message']));
         unset($GLOBALS['message']);
@@ -412,12 +432,24 @@ if (isset($_REQUEST['export'])
     }
 }
 
+// Code from user groups
+if (! $GLOBALS['cfgRelation']['menuswork']) {
+    exit;
+}
+
+if (isset($_REQUEST['viewUsers'])) {
+    // Display users belonging to a user group
+    $response->addHTML(Privileges::getHtmlForListingUsersofAGroup($_REQUEST['userGroup']));
+}
+// End of code from user groups
+
 if (isset($_REQUEST['adduser'])) {
     // Add user
     $response->addHTML(
         $serverPrivileges->getHtmlForAddUser((isset($dbname) ? $dbname : ''))
     );
-} elseif (isset($_REQUEST['checkprivsdb'])) {
+}
+elseif (isset($_REQUEST['checkprivsdb'])) {
     if (isset($_REQUEST['checkprivstable'])) {
         // check the privileges for a particular table.
         $response->addHTML(
@@ -432,7 +464,18 @@ if (isset($_REQUEST['adduser'])) {
             $serverPrivileges->getHtmlForSpecificDbPrivileges($_REQUEST['checkprivsdb'])
         );
     }
-} else {
+}
+// Code from user groups
+else if (isset($_REQUEST['addUserGroup'])) {
+    // Display add user group dialog
+    $response->addHTML(Privileges::getHtmlToEditUserGroup());
+}
+elseif (isset($_REQUEST['editUserGroup'])) {
+    // Display edit user group dialog
+    $response->addHTML(Privileges::getHtmlToEditUserGroup($_REQUEST['userGroup']));
+}
+// End of code from user groups
+else {
     if (isset($dbname) && ! is_array($dbname)) {
         $url_dbname = urlencode(
             str_replace(
@@ -444,9 +487,10 @@ if (isset($_REQUEST['adduser'])) {
     }
 
     if (! isset($username)) {
-        // No username is given --> display the overview
+        // No username is given --> display the overview and user groups table
         $response->addHTML(
             $serverPrivileges->getHtmlForUserOverview($pmaThemeImage, $text_dir)
+            .$serverPrivileges->getHtmlForUserGroupsTable()
         );
     } elseif (!empty($routinename)) {
         $response->addHTML(
@@ -476,88 +520,6 @@ if (isset($_REQUEST['adduser'])) {
             )
         );
     }
-}
-
-if ((isset($_REQUEST['viewing_mode']) && $_REQUEST['viewing_mode'] == 'server')
-    && $GLOBALS['cfgRelation']['menuswork']
-) {
-    $response->addHTML('</div>');
-}
-
-
-
-
-
-
-
-
-
-
-/**
- * Displays the 'User groups' sub page under 'Users' page.
- *
- * @package PhpMyAdmin
- */
-
-$relation = new Relation();
-$relation->getRelationsParam();
-if (! $GLOBALS['cfgRelation']['menuswork']) {
-    exit;
-}
-
-$response = Response::getInstance();
-$header   = $response->getHeader();
-$scripts  = $header->getScripts();
-$scripts->addFile('server_privileges.js');
-
-/**
- * Only allowed to superuser
- */
-if (! $GLOBALS['dbi']->isSuperuser()) {
-    $response->addHTML(
-        PhpMyAdmin\Message::error(__('No Privileges'))
-            ->getDisplay()
-    );
-    exit;
-}
-
-$response->addHTML('<div>');
-
-/**
- * Delete user group
- */
-if (! empty($_REQUEST['deleteUserGroup'])) {
-    Privileges::delete($_REQUEST['userGroup']);
-}
-
-/**
- * Add a new user group
- */
-if (! empty($_REQUEST['addUserGroupSubmit'])) {
-    Privileges::edit($_REQUEST['userGroup'], true);
-}
-
-/**
- * Update a user group
- */
-if (! empty($_REQUEST['editUserGroupSubmit'])) {
-    Privileges::edit($_REQUEST['userGroup']);
-}
-
-if (isset($_REQUEST['viewUsers'])) {
-    // Display users belonging to a user group
-    $response->addHTML(Privileges::getHtmlForListingUsersofAGroup($_REQUEST['userGroup']));
-}
-
-if (isset($_REQUEST['addUserGroup'])) {
-    // Display add user group dialog
-    $response->addHTML(Privileges::getHtmlToEditUserGroup());
-} elseif (isset($_REQUEST['editUserGroup'])) {
-    // Display edit user group dialog
-    $response->addHTML(Privileges::getHtmlToEditUserGroup($_REQUEST['userGroup']));
-} else {
-    // Display user groups table (This should not be reached)
-    $response->addHTML(Privileges::getHtmlForUserGroupsTable());
 }
 
 $response->addHTML('</div>');
