@@ -5629,6 +5629,14 @@ class Privileges
             . __('Add user group') . '</a>';
         $html_output .= '</fieldset>';
 
+        $html_output .= '<fieldset id="fieldset_export_user_group">';
+        $html_output .= '<a href="server_privileges.php'
+            . Url::getCommon(['exportUserGroup' => 1])
+            . '">'
+            . Util::getIcon('b_export')
+            . __('Export user groups') . '</a>';
+        $html_output .= '</fieldset>';
+
         return $html_output;
     }
 
@@ -5851,6 +5859,11 @@ class Privileges
         }
         $sql_query .= ";";
         $relation->queryAsControlUser($sql_query, true);
+    }
+
+    public function get()
+    {
+
     }
 }
 
