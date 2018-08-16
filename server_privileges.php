@@ -432,6 +432,20 @@ if (isset($_REQUEST['export'])
     }
 }
 
+// export user groups dump
+if(isset($_REQUEST['exportUserGroup']))
+{
+    list($title, $export) = $serverPrivileges->getListForExportUserGroups();
+
+    if ($response->isAjax()) {
+        $response->addJSON('message', $export);
+        $response->addJSON('title', $title);
+        exit;
+    } else {
+        $response->addHTML("<h2>$title</h2>$export");
+    }
+}
+
 // Code from user groups
 if (! $GLOBALS['cfgRelation']['menuswork']) {
     exit;

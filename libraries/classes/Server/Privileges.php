@@ -5861,9 +5861,52 @@ class Privileges
         $relation->queryAsControlUser($sql_query, true);
     }
 
-    public function get()
+    public function getListForExportUserGroups()
     {
+        $relation = new Relation();
 
+        // Query for user groups
+        $groupQuery = "SELECT usergroup, tab, allowed "
+            . "FROM phpMyAdmin.pma__usergroups "
+            . "WHERE 1;";
+        $groupResult = $relation->queryAsControlUser($groupQuery);
+        $groupText = "INSERT INTO `phpmyadmin`.`pma__usergroups` (`usergroup`, `tab`, `allowed`) VALUES\n";
+        while($row = $groupResult->fetch_assoc())
+        {
+            $usergroup = $row['usergroup'];
+            $tab = $row['tab'];
+            $allowed = $row['allowed'];
+            $groupText .= "('$usergroup', '$tab', '$allowed'),\n";
+        }
+        $groupText = substr_replace($groupText, ";", strrpos($groupText, ","), 1);
+
+        // Query for users in user groups
+        $userQuery = "SELECT usergroup, username "
+            . "FROM phpMyAdmin.pma__users "
+            . "WHERE 1;";
+        $userResult = $relation->queryAsControlUser($userQuery);
+        $userText = "INSERT INTO `phpmyadmin`.`pma__users` (`usergroup`, `username`) VALUES\n";
+        while($row = $userResult->fetch_assoc())
+        {
+            $usergroup = $row['usergroup'];
+            $username = $row['username'];
+            $userText .= "('$usergroup', '$username'),\n";
+        }
+        $userText = substr_replace($userText, ";", strrpos($userText, ","), 1);
+
+        // Formatting and returning of list
+        $title = __("User Groups");
+        $export = "<textarea class=\"export\" cols=\"60\" rows=\"15\">"
+            ."# Values for pma__usergroups table"
+            . "\n\n"
+            . $groupText
+            . "\n\n"
+            . "# Values for pma__users table"
+            . "\n\n"
+            . $userText
+            . "</textarea>";
+
+        return [$title, $export];
     }
 }
 
