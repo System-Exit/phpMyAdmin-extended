@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace PhpMyAdmin\Controllers\Giganibbles;
 
-use phpDocumentor\Reflection\Types\Array_;
 use phpDocumentor\Reflection\Types\Boolean;
 use PhpMyAdmin\Controllers\Controller;
 use PhpMyAdmin\Relation;
@@ -184,7 +183,7 @@ class ServerMessagesController extends Controller
         if (!is_null($id)) {
             $query = "INSERT INTO phpmyadmin.pma__messages "
                 . "(`id`, `sender`, `receiver`, `timestamp`, `message`, `seen`) "
-                . "VALUES ('$id','$sender', '$receiver', now(), '$message', 0);";
+                . "VALUES ($id,'$sender', '$receiver', now(), '$message', 0);";
         } else {
             $query = "INSERT INTO phpmyadmin.pma__messages "
                 . "(`sender`, `receiver`, `timestamp`, `message`, `seen`) "
