@@ -26,7 +26,6 @@ class UserAccountsPageTest extends TestBase
     {
         $link = $this->waitForElement('byXPath', "//a[contains(@href, 'server_privileges.php')]");
         $link->click();
-        $link->click();
         $this->waitAjax();
 
         $this->assertTrue($this->isElementPresent('byId', "usersForm"));
