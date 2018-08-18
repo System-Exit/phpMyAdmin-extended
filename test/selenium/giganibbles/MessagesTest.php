@@ -42,8 +42,8 @@ class MessagesTest extends TestBase
         parent::setUp();
 
         $this->sender = $GLOBALS['TESTSUITE_USER'];
-        $this->receiver = "pma_user";
-        $this->message = "Test message";
+        $this->receiver = $GLOBALS['TESTSUITE_USER'];
+        $this->message = "Selenium test message";
     }
 
     public function setUpPage()
@@ -54,9 +54,9 @@ class MessagesTest extends TestBase
 
     public function testSendMessage()
     {
-        $link = $this->waitForElement('byXPath', "//a[contains(@href, 'server_messages.php')]");
-        $link->click();
-        $link->click();
+        // Go to messages page
+        $this->expandMore();
+        $this->waitForElement('byXPath', "//a[contains(@href, 'server_messages.php')]")->click();
         $this->waitAjax();
 
         //Let page load
@@ -83,19 +83,26 @@ class MessagesTest extends TestBase
         $receiverField->value($this->receiver);
 
         // Attempt to send message
-        $this->scrollIntoView('');
-        $sendButton = $this->waitForElement("byValue", "Send");
+        $sendButton = $this->waitForElement("byXPath", "//input[@value='Send']");
         $this->moveto($sendButton);
         $sendButton->click();
 
+        // Wait for message to send
+        $this->waitAjax();
+
         // Check if the sending was successful
-        $relation = new Relation();
-        $query = "SELECT * FROM `phpmyadmin`.`pma__messages` WHERE receiver = '$this->receiver';";
-        $result = $relation->queryAsControlUser($query);
+        $query = "SELECT * FROM `phpmyadmin`.`pma__messages` WHERE message = '$this->message';";
+        $result = $this->dbQuery($query);
         $this->assertTrue($result != false && $result->num_rows > 0);
 
+        // Reload messages page
+        $this->refresh();
+
+        //Check if new message is visible
+        $this->assertTrue($this->isElementPresent('byXPath', "//p[text()='$this->message']"));
+
         // Delete test message from database
-        $query = "DELETE FROM `phpmyadmin`.`pma__messages` WHERE receiver = '$this->receiver';";
-        $relation->queryAsControlUser($query);
+        $query = "DELETE FROM `phpmyadmin`.`pma__messages` WHERE message = '$this->message';";
+        $this->dbQuery($query);
     }
 }
