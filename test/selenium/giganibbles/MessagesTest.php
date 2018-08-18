@@ -54,15 +54,16 @@ class MessagesTest extends TestBase
 
     public function testSendMessage()
     {
-        //$this->moveto($this->waitForElement('byPartialLinkText', "More"));
-        $this->waitForElement('byPartialLinkText', "Messages")->click();
+        $link = $this->waitForElement('byXPath', "//a[contains(@href, 'server_messages.php')]");
+        $link->click();
+        $link->click();
+        $this->waitAjax();
 
         //Let page load
         $this->waitAjax();
 
         // Add message to send
         $this->scrollIntoView('form_message');
-        $this->waitForElement('byId', 'form_message');
         $ele = $this->waitForElement("byId", "form_message");
         $this->moveto($ele);
         $ele->click();
@@ -73,7 +74,6 @@ class MessagesTest extends TestBase
 
         // Add receiver to receive message
         $this->scrollIntoView('form_receiver');
-        $this->waitForElement('byId', 'form_receiver');
         $ele = $this->waitForElement("byId", "form_receiver");
         $this->moveto($ele);
         $ele->click();
@@ -83,7 +83,7 @@ class MessagesTest extends TestBase
         $receiverField->value($this->receiver);
 
         // Attempt to send message
-        //$this->scrollIntoView(''); This button lacks an id
+        $this->scrollIntoView('');
         $sendButton = $this->waitForElement("byValue", "Send");
         $this->moveto($sendButton);
         $sendButton->click();
