@@ -76,12 +76,13 @@ class UserAccountsTest extends TestBase
         // Test if export user element is present
         $this->assertTrue($this->isElementPresent('byXPath', "//a[contains(@href, 'exportUserGroup')]"));
 
-        // Test if group export text appears
-        $ele = $this->waitForElement('byId', 'fieldset_export_user_group');
+        // Test if group export text appear
+        $ele = $this->waitForElement('byId','fieldset_export_user_group');
         $this->moveto($ele);
         $this->waitForElement('byXPath', "//a[contains(@href, 'exportUserGroup')]")->click();
         $this->waitAjax();
         $this->assertTrue($this->isElementPresent('byXPath', "//div[@class='CodeMirror-lines']"));
+
     }
 
     /**
