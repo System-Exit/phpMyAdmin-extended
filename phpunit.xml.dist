@@ -6,12 +6,22 @@
          verbose="true">
 
     <selenium>
-        <browser name="Firefox on localhost"
-                 browser="firefox"
+        <browser name="Chrome on localhost"
+                 browser="chrome"
                  host="127.0.0.1"
                  port="4444"
                  timeout="30000"/>
     </selenium>
+	<php>
+        <env name="TESTSUITE_SERVER" value="localhost"/>
+        <env name="TESTSUITE_USER" value="root"/>
+        <env name="TESTSUITE_PASSWORD" value=""/>
+        <env name="TESTSUITE_DATABASE" value="phpmyadmin"/>
+        <env name="TESTSUITE_URL" value="http://localhost/phpmyadmin/" />
+        <env name="TESTSUITE_SELENIUM_HOST" value="127.0.0.1" />
+        <env name="TESTSUITE_SELENIUM_PORT" value="4444" />
+		<env name="TESTSUITE_SELENIUM_BROWSER" value="chrome" />
+	</php>
 
     <testsuites>
         <testsuite name="Classes">

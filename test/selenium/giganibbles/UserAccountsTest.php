@@ -9,7 +9,7 @@
 namespace PhpMyAdmin\Tests\Selenium;
 
 
-class UserAccountsPageTest extends TestBase
+class UserAccountsTest extends TestBase
 {
 
     /**
