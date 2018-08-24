@@ -144,7 +144,7 @@ class ServerMessagesController extends Controller
         $relation = new Relation();
 
         // Query for all messages sent to current user
-        $query = "SELECT msg.message, msg.sender, msg.timestamp "
+        $query = "SELECT msg.message, msg.sender, msg.timestamp, msg.seen "
             . "FROM phpmyadmin.pma__messages msg "
             . "WHERE msg.receiver LIKE '$user' "
             . "ORDER BY timestamp DESC;";
@@ -158,6 +158,7 @@ class ServerMessagesController extends Controller
                 $messages[$i]['message'] = $row['message'];
                 $messages[$i]['sender'] = $row['sender'];
                 $messages[$i]['timestamp'] = $row['timestamp'];
+                $messages[$i]['seen'] = $row['seen'];
                 $i++;
             }
         } else {
