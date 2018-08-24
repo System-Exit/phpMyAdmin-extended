@@ -160,10 +160,18 @@ class ServerMessagesController extends Controller
                 $messages[$i]['timestamp'] = $row['timestamp'];
                 $i++;
             }
-            return $messages;
         } else {
             $messages = false;
         }
+
+        // Sets all retrieved messages as read
+        $query = "UPDATE phpmyadmin.pma__messages msg "
+            . "SET msg.seen = true "
+            . "WHERE msg.receiver LIKE '$user' ";
+        $relation->queryAsControlUser($query);
+
+        // Returns array of messages
+        return $messages;
     }
 
     /**
