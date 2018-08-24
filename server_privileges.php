@@ -432,7 +432,7 @@ if (isset($_REQUEST['export'])
     }
 }
 
-// export user groups dump
+// export user groups definition
 if(isset($_REQUEST['exportUserGroup']))
 {
     list($title, $export) = $serverPrivileges->getListForExportUserGroups();

@@ -91,6 +91,9 @@ AJAX.registerTeardown('server_privileges.js', function () {
     $(document).off('change', '#checkbox_SSL_priv');
     $(document).off('change', 'input[name="ssl_type"]');
     $(document).off('change', '#select_authentication_plugin');
+
+    $(document).off('click', 'a.deleteUserGroup.ajax');
+    $(document).off('click', 'a.export_user_groups_anchor.ajax');
 });
 
 AJAX.registerOnload('server_privileges.js', function () {
@@ -358,6 +361,40 @@ AJAX.registerOnload('server_privileges.js', function () {
     }); // end export privileges
 
     /**
+     *  AJAX handler for user group export
+     */
+    $(document).on('click', 'a.export_user_groups_anchor.ajax', function (event) {
+        event.preventDefault();
+        var $msgbox = PMA_ajaxShowMessage();
+        /**
+         * @var button_options  Object containing options for jQueryUI dialog buttons
+         */
+        var button_options = {};
+        button_options[PMA_messages.strClose] = function () {
+            $(this).dialog('close');
+        };
+        $.get($(this).attr('href'), { 'ajax_request': true }, function (data) {
+            if (typeof data !== 'undefined' && data.success === true) {
+                var $ajaxDialog = $('<div />')
+                    .append(data.message)
+                    .dialog({
+                        title: data.title,
+                        width: 500,
+                        buttons: button_options,
+                        close: function () {
+                            $(this).remove();
+                        }
+                    });
+                PMA_ajaxRemoveMessage($msgbox);
+                // Attach syntax highlighted editor to export dialog
+                PMA_getSQLEditor($ajaxDialog.find('textarea'));
+            } else {
+                PMA_ajaxShowMessage(data.error, false);
+            }
+        }); // end $.get
+    }); // end export user groups
+
+    /**
      * AJAX handler to Paginate the Users Table
      *
      * @see         PMA_ajaxShowMessage()
@@ -475,19 +512,7 @@ AJAX.registerOnload('server_privileges.js', function () {
 
     var windowwidth = $(window).width();
     $('.jsresponsive').css('max-width', (windowwidth - 35) + 'px');
-});
 
-/**
- * Unbind all event handlers before tearing down a page
- */
-AJAX.registerTeardown('server_privileges.js', function () {
-    $(document).off('click', 'a.deleteUserGroup.ajax');
-});
-
-/**
- * Bind event handlers
- */
-AJAX.registerOnload('server_privileges.js', function () {
     // update the checkall checkbox on Edit user group page
     $(checkboxes_sel).trigger('change');
 

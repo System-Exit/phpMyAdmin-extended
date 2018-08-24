@@ -5630,7 +5630,8 @@ class Privileges
         $html_output .= '</fieldset>';
 
         $html_output .= '<fieldset id="fieldset_export_user_group">';
-        $html_output .= '<a href="server_privileges.php'
+        $html_output .= '<a class="export_user_groups_anchor ajax" '
+            . 'href="server_privileges.php'
             . Url::getCommon(['exportUserGroup' => 1])
             . '">'
             . Util::getIcon('b_export')

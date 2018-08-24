@@ -32,9 +32,17 @@ class ServerMessagesController extends Controller
         // pass to ajax function if page call is an ajax request
         // Note: error handling and validation is done in sendAction().
         if ($this->response->isAjax()
-            && isset($_POST['form_send_check'])
-        ) {
+            && isset($_POST['form_send_check']))
+        {
             $this->sendAction();
+            return;
+        }
+
+        // if ajax request for marking messages as read, do so
+        if($this->response->isAjax()
+            && isset($_POST['mark_seen']))
+        {
+            $this->markSeenAction();
             return;
         }
 
@@ -125,10 +133,41 @@ class ServerMessagesController extends Controller
         } else {
             $response->setRequestStatus(true);
             // TODO when messages are sent they stop all other content from displaying.
-            // $message_out = Message::success(__('The message has been sent.'));
-            // $response->addJSON('message', $message_out);
+            $message_out = Message::success(_('The message has been sent.'));
+            $response->addJSON('message', $message_out);
         }
 
+        return;
+    }
+
+    /**
+     * Marks all messages for current user as seen
+     *
+     * @return void
+     */
+    public function markSeenAction()
+    {
+        global $cfg;
+        $response = $this->response;
+        $relation = new Relation();
+
+        $user = $cfg['Server']['user'];
+
+        // Sets all retrieved messages as read
+        $query = "UPDATE phpmyadmin.pma__messages msg "
+            . "SET msg.seen = true "
+            . "WHERE msg.receiver LIKE '$user' ";
+        $success = $relation->queryAsControlUser($query);
+
+        if($success === false)
+        {
+            $response->setRequestStatus(false);
+        }
+        else
+        {
+            $response->setRequestStatus(true);
+        }
+        return;
     }
 
     /**
