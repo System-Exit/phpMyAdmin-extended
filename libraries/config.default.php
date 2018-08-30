@@ -2868,7 +2868,7 @@ $cfg['ThemeManager'] = true;
  *
  * @global string $cfg['ThemeDefault']
  */
-$cfg['ThemeDefault'] = 'pmahomme';
+$cfg['ThemeDefault'] = 'RMIT';
 
 /**
  * allow different theme for each configured server
