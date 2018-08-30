@@ -3234,7 +3234,7 @@ Theme manager settings
 .. config:option:: $cfg['ThemeDefault']
 
     :type: string
-    :default: ``'pmahomme'``
+    :default: ``'RMIT'``
 
     The default theme (a subdirectory under :file:`./themes/`).
 
