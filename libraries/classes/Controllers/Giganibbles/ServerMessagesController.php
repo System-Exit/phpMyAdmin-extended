@@ -27,44 +27,48 @@ class ServerMessagesController extends Controller
 
     public function indexAction()
     {
-        global $cfg;
+        $response = $this->response;
 
         // pass to ajax function if page call is an ajax request
         // Note: error handling and validation is done in sendAction().
-        if ($this->response->isAjax()
-            && isset($_POST['form_send_check']))
-        {
+        if (
+            $response->isAjax()
+            && isset($_POST['form_send_check'])
+        ) {
             $this->sendAction();
             return;
         }
 
         // if ajax request for marking messages as read, do so
-        if($this->response->isAjax()
-            && isset($_POST['mark_seen']))
-        {
+        if (
+            $response->isAjax()
+            && isset($_POST['mark_seen'])
+        ) {
             $this->markSeenAction();
             return;
         }
 
-        // get new response
-        $response = $this->response;
+        // if ajax request for getting messages
+        if (
+            $response->isAjax()
+            && isset($_POST['get_messages'])
+        ) {
+            // Get messages for current user
+            $this->getMessages();
+            return;
+        }
 
         // upload script
-        $header = $response->getHeader();
-        $scripts = $header->getScripts();
-        $scripts->addFile('Giganibbles/server_messages.js');
+        $header = $this->response->getHeader();
+        $scriptsHeader = $header->getScripts();
+        $scriptsHeader->addFile('Giganibbles/server_messages.js');
 
-        // Get current user
-        $user = $cfg['Server']['user'];
-
-        // Get messages for current user
-        $messages = $this->getMessages($user);
-
-        $response->addHTML($this->template->render(
+        // $response->setRequestStatus(true);
+        $this->response->addHTML($this->template->render(
             'Giganibbles/server_messages',
             [
                 // Passes messages array
-                'messages' => $messages
+                'messages' => []
             ]
         ));
     }
@@ -86,8 +90,8 @@ class ServerMessagesController extends Controller
             || empty($_POST['form_message'])
         ) {
             $response->setRequestStatus(false);
-            //$message_out = Message::error(__('Error: Message and receiver need to be filled out.'));
-            //$response->addJSON('error', $message_out);
+            $message_out = Message::error(__('Error: Message and receiver need to be filled out.'));
+            $response->addJSON('message', $message_out);
             return;
         }
 
@@ -98,8 +102,8 @@ class ServerMessagesController extends Controller
         // checks if user is current
         if (empty($sender)) {
             $response->setRequestStatus(false);
-            $message_out = Message::error(__('Error: there was an issue when checking the current user.'));
-            $response->addJSON('error', $message_out);
+            $message_out = Message::error(__('Error: there was an issue with the current user. Please try logging out and in again.'));
+            $response->addJSON('message', $message_out);
             return;
         }
 
@@ -111,7 +115,7 @@ class ServerMessagesController extends Controller
         if (empty($receiver_result) || $receiver_result->num_rows == 0) {
             $response->setRequestStatus(false);
             $message_out = Message::error(__('Error: the receiver is not a valid user.'));
-            $response->addJSON('error', $message_out);
+            $response->addJSON('message', $message_out);
             return;
         }
 
@@ -119,7 +123,7 @@ class ServerMessagesController extends Controller
         if (empty($message)) {
             $response->setRequestStatus(false);
             $message_out = Message::error(__('Error: the message has not been set.'));
-            $response->addJSON('error', $message_out);
+            $response->addJSON('message', $message_out);
             return;
         }
 
@@ -128,12 +132,11 @@ class ServerMessagesController extends Controller
 
         if ($success === false) {
             $response->setRequestStatus(false);
-            $message_out = Message::error(__('Could not send the message.'));
-            $response->addJSON('error', $message_out);
+            $message_out = Message::error(__('Error: Could not send the message.'));
+            $response->addJSON('message', $message_out);
         } else {
             $response->setRequestStatus(true);
-            // TODO when messages are sent they stop all other content from displaying.
-            $message_out = Message::success(_('The message has been sent.'));
+            $message_out = Message::success(__('The message has been successfully sent.'));
             $response->addJSON('message', $message_out);
         }
 
@@ -141,7 +144,7 @@ class ServerMessagesController extends Controller
     }
 
     /**
-     * Marks all messages for current user as seen
+     * Marks all messages for current user as seen.
      *
      * @return void
      */
@@ -152,19 +155,31 @@ class ServerMessagesController extends Controller
         $relation = new Relation();
 
         $user = $cfg['Server']['user'];
+        $toUpdate = $_POST['mark_seen_ids'];
+        $orMessage = $this->getReadOrStatement($toUpdate);
+
+        // check that there are messages to mark as seen. If not, return.
+        if (empty($orMessage) || count($orMessage) === 0) {
+            // error message is to check for issues.
+            $response->setRequestStatus(true);
+            return;
+        }
 
         // Sets all retrieved messages as read
         $query = "UPDATE phpmyadmin.pma__messages msg "
             . "SET msg.seen = true "
-            . "WHERE msg.receiver LIKE '$user' ";
+            . "WHERE msg.receiver LIKE '$user' AND msg.seen = false AND ("
+            . "$orMessage"
+            . ");";
         $success = $relation->queryAsControlUser($query);
 
-        if($success === false)
-        {
+        if($success === false) {
+            $messageOut = Message::error(
+                __("New messages could not be marked as 'seen'.")
+            );
             $response->setRequestStatus(false);
-        }
-        else
-        {
+            $response->addJSON('message', $messageOut);
+        } else {
             $response->setRequestStatus(true);
         }
         return;
@@ -173,45 +188,86 @@ class ServerMessagesController extends Controller
     /**
      *  Queries and returns the messages that the specified user has received
      *
-     * @param $user
-     *
      * @return string array of strings of data found from query
      * @return boolean false on failure to retrieve any messages
      */
-    public function getMessages($user)
+    public function getMessages()
     {
+        global $cfg;
         $relation = new Relation();
 
+        $user = $cfg['Server']['user'];
+        if (empty($_POST['last_date'])) {
+            $lastDate = date('Y-m-d H:i:s');
+        } else {
+            try {
+                $lastDate = \DateTime::createFromFormat('Y-m-d H:i:s', $_POST['last_date']);
+            } catch (\Exception $e) {
+                $lastDate = date('Y-m-d H:i:s');
+            }
+        }
+        $limit = !empty($_POST['limit']) ? intval($_POST['limit']) : -1;
+        // error_log("lastdate = " . $lastDate->format('Y-m-d H:i:s'));
+
         // Query for all messages sent to current user
-        $query = "SELECT msg.message, msg.sender, msg.timestamp, msg.seen "
+        $query = "SELECT msg.id, msg.message, msg.sender, msg.timestamp, msg.seen "
             . "FROM phpmyadmin.pma__messages msg "
             . "WHERE msg.receiver LIKE '$user' "
-            . "ORDER BY timestamp DESC;";
+            . "ORDER BY msg.timestamp DESC; ";
         $result = $relation->queryAsControlUser($query);
 
         // Extract messages from query result, setting message as false if none are present
-        if($result !== false && $result->num_rows > 0) {
+        $foundEnd = false;
+        if ($result === false) {
+            $messages = false;
+        } else if ($result->num_rows > 0) {
             $i = 0;
             $messages = [];
-            while($row = $result->fetch_assoc()) {
+            while(true) {
+                $row = $result->fetch_assoc();
+
+                // check if found end and send complete message if true
+                if ($row === null) {
+                    $foundEnd = true;
+                    break;
+                }
+
+                // skip if the message was the last one recorded
+                $rowDate = \DateTime::createFromFormat('Y-m-d H:i:s', $row['timestamp']);
+                // error_log("rowdate " . $row['id'] . " = " . $rowDate->format('Y-m-d H:i:s') . " : " . ($rowDate >= $lastDate));
+                if ($rowDate >= $lastDate) {
+                    continue;
+                }
+                $messages[$i]['id'] = $row['id'];
                 $messages[$i]['message'] = $row['message'];
                 $messages[$i]['sender'] = $row['sender'];
                 $messages[$i]['timestamp'] = $row['timestamp'];
                 $messages[$i]['seen'] = $row['seen'];
                 $i++;
+
+                if ($limit > 0 && $i >= $limit && $rowDate != $lastDate) {
+                    break;
+                }
             }
+
         } else {
             $messages = false;
+            $foundEnd = true;
         }
 
-        // Sets all retrieved messages as read
-        $query = "UPDATE phpmyadmin.pma__messages msg "
-            . "SET msg.seen = true "
-            . "WHERE msg.receiver LIKE '$user' ";
-        $relation->queryAsControlUser($query);
-
-        // Returns array of messages
-        return $messages;
+        // Sends message to client
+        if ($messages !== false) {
+            $successMessage = Message::success(__('Results found: ' . count($messages)));
+            $this->response->setRequestStatus(true);
+            $this->response->addJSON('message', $successMessage);
+            $this->response->addJSON('data', $messages);
+        } else if($foundEnd === false) {
+            $failMessage = Message::error(__('Error getting messages from server.'));
+            $this->response->setRequestStatus(false);
+            $this->response->addJSON('message', $failMessage);
+        } else {
+            $this->response->setRequestStatus(true);
+        }
     }
 
     /**
@@ -254,5 +310,22 @@ class ServerMessagesController extends Controller
         $query = "DELETE FROM phpmyadmin.pma__messages WHERE id = $id;";
 
         return $relation->queryAsControlUser($query, true);
+    }
+
+    private function getReadOrStatement(Array $idList)
+    {
+        if (!isset($idList) || count($idList) == 0) {
+            return null;
+        }
+        $query = "";
+        $first = true;
+        foreach ($idList as $i) {
+            if (! $first) {
+                $query .= " OR ";
+            }
+            $query .= "msg.id = $i";
+            $first = false;
+        }
+        return $query;
     }
 }
