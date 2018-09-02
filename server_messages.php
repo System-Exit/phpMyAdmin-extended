@@ -19,6 +19,7 @@ declare(strict_types=1);
 
 use PhpMyAdmin\Response;
 use PhpMyAdmin\Di\Container;
+use PhpMyAdmin\Controllers\Giganibbles\ServerMessagesController;
 
 /**
  * Does the common work
@@ -28,13 +29,13 @@ require_once 'libraries/common.inc.php';
 /* -- using Twig */
 $container = Container::getDefaultContainer();
 $container->factory('PhpMyAdmin\Controllers\Giganibbles\ServerMessagesController');
-$container->alias('messages', 'PhpMyAdmin\Controllers\Giganibbles\ServerMessagesController');
+$container->alias('ServerMessagesController', 'PhpMyAdmin\Controllers\Giganibbles\ServerMessagesController');
 $container->set('PhpMyAdmin\Response', Response::getInstance());
 $container->alias('response', 'PhpMyAdmin\Response');
 
 /** @var ServerMessagesController $controller */
 $controller = $container->get(
-    'messages',
+    'ServerMessagesController',
     []
 );
 $controller->indexAction();

@@ -3972,14 +3972,14 @@ body .ui-dialog .ui-dialog-buttonpane button.ui-state-active {
 
 .message_box {
     border: 1px solid #606060;
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
     margin-bottom: 10px;
     margin-top: 5px;
     display: block;
     width: 600px;
     min-width: 300px;
-    height: 400px;
-    min-height: 50px;
+    /* height: 400px; */
+    /* min-height: 50px; */
     resize: both;
 }
 
@@ -4020,4 +4020,8 @@ body .ui-dialog .ui-dialog-buttonpane button.ui-state-active {
 #form_message {
     min-width: 600px;
     height: 100px;
+}
+
+.no_messages {
+    margin: 10px;
 }
