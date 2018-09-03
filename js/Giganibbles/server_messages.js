@@ -16,19 +16,57 @@ function displayMessageError(id, reason) {
     PMA_ajaxShowMessage(message, false, 'error');
 }
 
-function dateToSqlDate(datetime) {
+function dateToSqlDate(datetime, local) {
+    if (typeof local === 'undefined' || local === null) {
+        local = false;
+    }
     var date;
     if (datetime === -1) {
         date = new Date();
     } else {
         date = new Date(datetime);
     }
-    return date.getUTCFullYear() + '-' +
-        ('00' + (date.getUTCMonth() + 1)).slice(-2) + '-' +
-        ('00' + date.getUTCDate()).slice(-2) + ' ' +
-        ('00' + date.getUTCHours()).slice(-2) + ':' +
-        ('00' + date.getUTCMinutes()).slice(-2) + ':' +
-        ('00' + date.getUTCSeconds()).slice(-2);
+    if (local) {
+        return date.getFullYear() + '-' +
+            ('00' + (date.getMonth() + 1)).slice(-2) + '-' +
+            ('00' + date.getDate()).slice(-2) + ' ' +
+            ('00' + date.getHours()).slice(-2) + ':' +
+            ('00' + date.getMinutes()).slice(-2) + ':' +
+            ('00' + date.getSeconds()).slice(-2);
+    } else {
+        return date.getUTCFullYear() + '-' +
+            ('00' + (date.getUTCMonth() + 1)).slice(-2) + '-' +
+            ('00' + date.getUTCDate()).slice(-2) + ' ' +
+            ('00' + date.getUTCHours()).slice(-2) + ':' +
+            ('00' + date.getUTCMinutes()).slice(-2) + ':' +
+            ('00' + date.getUTCSeconds()).slice(-2);
+    }
+}
+
+/**
+ * Pass a Date object or null, and a UTC date is returned.
+ * @param datetime
+ * @returns {Date} UTC date
+ */
+function getUTCDate(datetime) {
+    if (typeof datetime === 'undefined' || datetime === null) {
+        datetime = new Date();
+    }
+    return new Date(Date.UTC(
+        datetime.getUTCFullYear(),
+        datetime.getUTCMonth(),
+        datetime.getUTCDay(),
+        datetime.getUTCHours(),
+        datetime.getUTCMinutes(),
+        datetime.getUTCSeconds()
+    ));
+}
+
+function convertUTCToLocal(datetimeString) {
+    var dateUTC = new Date(datetimeString);
+    var offset = dateUTC.getTimezoneOffset();
+    dateUTC.setMinutes(dateUTC.getMinutes() - offset);
+    return dateToSqlDate(dateUTC, true);
 }
 
 /**
@@ -88,6 +126,8 @@ function getMessages(lastDate, limit) {
         success: function(response) {
             PMA_ajaxRemoveMessage(msg);
 
+            console.log(response.data);
+
             // fatal error getting data
             if (typeof response.data === 'undefined') {
                 displayMessageError(
@@ -127,6 +167,10 @@ function getMessages(lastDate, limit) {
                     'timestamp' : response.data[e].timestamp,
                     'seen'      : response.data[e].seen
                 };
+                // change timestamp to current datetime
+                message.timestamp = convertUTCToLocal(message.timestamp);
+
+                // store message
                 ser_mes_loadedMessages[response.data[e].id] = message;
 
                 // if no messages are present, delete 'no message' element

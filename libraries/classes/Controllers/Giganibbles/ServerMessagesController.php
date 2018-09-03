@@ -207,7 +207,7 @@ class ServerMessagesController extends Controller
             }
         }
         $limit = !empty($_POST['limit']) ? intval($_POST['limit']) : -1;
-        // error_log("lastdate = " . $lastDate->format('Y-m-d H:i:s'));
+        error_log("lastdate = " . $lastDate->format('Y-m-d H:i:s'));
 
         // Query for all messages sent to current user
         $query = "SELECT msg.id, msg.message, msg.sender, msg.timestamp, msg.seen "
@@ -234,7 +234,7 @@ class ServerMessagesController extends Controller
 
                 // skip if the message was the last one recorded
                 $rowDate = \DateTime::createFromFormat('Y-m-d H:i:s', $row['timestamp']);
-                // error_log("rowdate " . $row['id'] . " = " . $rowDate->format('Y-m-d H:i:s') . " : " . ($rowDate >= $lastDate));
+                error_log("rowdate " . $row['id'] . " = " . $rowDate->format('Y-m-d H:i:s') . " : " . ($rowDate >= $lastDate));
                 if ($rowDate >= $lastDate) {
                     continue;
                 }
@@ -255,6 +255,7 @@ class ServerMessagesController extends Controller
             $foundEnd = true;
         }
 
+        error_log(print_r($messages, true));
         // Sends message to client
         if ($messages !== false) {
             $successMessage = Message::success(__('Results found: ' . count($messages)));
@@ -287,11 +288,11 @@ class ServerMessagesController extends Controller
         if (!is_null($id)) {
             $query = "INSERT INTO phpmyadmin.pma__messages "
                 . "(`id`, `sender`, `receiver`, `timestamp`, `message`, `seen`) "
-                . "VALUES ($id,'$sender', '$receiver', now(), '$message', 0);";
+                . "VALUES ($id,'$sender', '$receiver', utc_timestamp(), '$message', 0);";
         } else {
             $query = "INSERT INTO phpmyadmin.pma__messages "
                 . "(`sender`, `receiver`, `timestamp`, `message`, `seen`) "
-                . "VALUES ('$sender', '$receiver', now(), '$message', 0);";
+                . "VALUES ('$sender', '$receiver', utc_timestamp(), '$message', 0);";
         }
 
         return $relation->queryAsControlUser($query, true);
