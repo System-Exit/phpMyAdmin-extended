@@ -126,8 +126,6 @@ function getMessages(lastDate, limit) {
         success: function(response) {
             PMA_ajaxRemoveMessage(msg);
 
-            console.log(response.data);
-
             // fatal error getting data
             if (typeof response.data === 'undefined') {
                 displayMessageError(
