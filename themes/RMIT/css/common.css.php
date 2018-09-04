@@ -3999,11 +3999,11 @@ body .ui-dialog .ui-dialog-buttonpane button.ui-state-active {
     font-weight: lighter;
 }
 
-.message_sender b {
+.message_sender strong {
     font-weight: bold;
 }
 
-.message_timestamp b {
+.message_timestamp strong {
     font-weight: normal;
 }
 
@@ -4011,6 +4011,7 @@ body .ui-dialog .ui-dialog-buttonpane button.ui-state-active {
     display: block;
     margin-top: 5px;
     border-top: 1px solid #EEEEEE;
+    font-size: 1.2em;
 }
 
 .form_send_message {
@@ -4024,4 +4025,14 @@ body .ui-dialog .ui-dialog-buttonpane button.ui-state-active {
 
 .no_messages {
     margin: 10px;
+}
+
+.message_new {
+    float: right;
+    font-size: 0.85em;
+    background-color: red;
+    padding: 2px 10px;
+    color: white;
+    font-weight: 800;
+    border-radius: 8px;
 }

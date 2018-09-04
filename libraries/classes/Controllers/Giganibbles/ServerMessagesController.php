@@ -155,25 +155,27 @@ class ServerMessagesController extends Controller
         $relation = new Relation();
 
         $user = $cfg['Server']['user'];
-        $toUpdate = $_POST['mark_seen_ids'];
-        $orMessage = $this->getReadOrStatement($toUpdate);
+        $toUpdate = $_POST['mark_seen_messages'];
+        $updated = [];
+        $queueError = false;
 
-        // check that there are messages to mark as seen. If not, return.
-        if (empty($orMessage) || count($orMessage) === 0) {
-            // error message is to check for issues.
-            $response->setRequestStatus(true);
-            return;
+        // iterate through ids and mark as seen
+        foreach ($toUpdate as $id) {
+            // Sets all retrieved messages as read
+            $query = "UPDATE phpmyadmin.pma__messages msg "
+                     . "SET msg.seen = true, msg.timestamp = msg.timestamp "
+                     . "WHERE msg.receiver LIKE '$user' "
+                     . "AND msg.seen = false "
+                     . "AND msg.id = $id;";
+            $success = $relation->queryAsControlUser($query);
+            if ($success !== false) {
+                array_push($updated, $id);
+            } else {
+                $queueError = true;
+            }
         }
 
-        // Sets all retrieved messages as read
-        $query = "UPDATE phpmyadmin.pma__messages msg "
-            . "SET msg.seen = true "
-            . "WHERE msg.receiver LIKE '$user' AND msg.seen = false AND ("
-            . "$orMessage"
-            . ");";
-        $success = $relation->queryAsControlUser($query);
-
-        if($success === false) {
+        if($queueError === true) {
             $messageOut = Message::error(
                 __("New messages could not be marked as 'seen'.")
             );
@@ -181,6 +183,7 @@ class ServerMessagesController extends Controller
             $response->addJSON('message', $messageOut);
         } else {
             $response->setRequestStatus(true);
+            $response->addJSON('seen', $updated);
         }
         return;
     }

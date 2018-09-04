@@ -3,6 +3,8 @@ var ser_mes_MESSAGE_GET_LIMIT = 10;
 var ser_mes_ERROR_UNEXPECTED = 31800;
 var ser_mes_ERROR_SERVER_GET = 31900;
 var ser_mes_ERROR_SERVER_GET_FATAL = 32000;
+var ser_mes_ERROR_SERVER_SEEN = 33000;
+var ser_mes_ERROR_SERVER_DISPLAYED = 33100;
 var ser_mes_loadedMessages = [];
 
 // set debug for now
@@ -78,17 +80,18 @@ function convertUTCToLocal(datetimeString) {
  */
 function messageToHtml(message) {
     if (
-        message.id == null ||
-        message.message == null ||
-        message.sender == null ||
-        message.timestamp == null ||
-        message.seen == null
+        message.id === null ||
+        message.message === null ||
+        message.sender === null ||
+        message.timestamp === null ||
+        message.seen === null
     ) {
         throw "Error converting message '" + message + "' to HTML.";
     }
     return "<li class=\"message_body\">" +
         "<p class=\"message_sender\">Sender: <strong>" + message.sender + "</strong></p>" +
         "<p class=\"message_timestamp\">Time: <strong>" + message.timestamp + "</strong></p>" +
+        (message.seen === false ? "<p class=\"message_new\">NEW</p>" : "") +
         "<p class=\"message_message\">" + message.message + "</p>\n" +
         "</li>";
 }
@@ -105,6 +108,55 @@ function getOldestMessage() {
         }
     }
     return lowestDate;
+}
+
+function seenMessages() {
+    var unseen = [];
+    var addTo = 0;
+    for (var m in ser_mes_loadedMessages) {
+        var message = ser_mes_loadedMessages[m];
+        if (message.seen === false) {
+            unseen[addTo] = message.id;
+            addTo++;
+        }
+    }
+    if (unseen.length > 0) {
+        var toServer = {
+            mark_seen           : true,
+            mark_seen_messages  : unseen,
+            ajax_request        : true,
+            ajax_page_request   : false
+        };
+        $.ajax({
+            url: "server_messages.php",
+            method: 'POST',
+            dataType: 'json',
+            data: toServer,
+            success: function(response) {
+                console.log(response);
+                if (
+                    typeof response.seen === 'undefined' ||
+                    response.success === false
+                ) {
+                    var $errorMessage = "An error was encountered when attempting to mark messages as 'seen'.";
+                    console.error($errorMessage);
+                    displayMessageError(ser_mes_ERROR_SERVER_SEEN, $errorMessage);
+                    return;
+                }
+
+                // if successful, silently set all unseen messages to seen
+                if (response.seen.length > 0) {
+                    for (var i = 0; i < response.seen.length; i++) {
+                        ser_mes_loadedMessages[response.seen[i]].seen = true;
+                    }
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error(textStatus + " : " + errorThrown);
+                displayMessageError(ser_mes_ERROR_SERVER_SEEN, errorThrown);
+            }
+        });
+    }
 }
 
 function getMessages(lastDate, limit) {
@@ -156,6 +208,7 @@ function getMessages(lastDate, limit) {
             }
 
             // otherwise, print all messages to page
+            var foundError = false;
             for (var e in response.data) {
                 // add message object to array for later use.
                 var message = {
@@ -163,7 +216,7 @@ function getMessages(lastDate, limit) {
                     'message'   : response.data[e].message,
                     'sender'    : response.data[e].sender,
                     'timestamp' : response.data[e].timestamp,
-                    'seen'      : response.data[e].seen
+                    'seen'      : (response.data[e].seen == 'true' || response.data[e].seen == '1')
                 };
                 // change timestamp to current datetime
                 message.timestamp = convertUTCToLocal(message.timestamp);
@@ -177,7 +230,23 @@ function getMessages(lastDate, limit) {
                 }
 
                 // add element to page
-                $("#message_container").append(messageToHtml(message));
+                try {
+                    $("#message_container").append(messageToHtml(message));
+                } catch(error) {
+                    foundError = true;
+                }
+            }
+
+            // check if the messages were displayed correctly.
+            if (foundError === true) {
+                displayMessageError(
+                    ser_mes_ERROR_SERVER_DISPLAYED,
+                    "An error was encountered when attempting to display the messages"
+                );
+            } else {
+                // send message to server, telling it that the messages have
+                // been received.
+                seenMessages();
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
