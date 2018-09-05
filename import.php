@@ -237,6 +237,7 @@ if (! in_array(
     [
         'csv',
         'ldi',
+        'json',
         'mediawiki',
         'ods',
         'shp',
