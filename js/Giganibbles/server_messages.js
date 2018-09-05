@@ -320,6 +320,7 @@ AJAX.registerOnload('Giganibbles/server_messages.js', function () {
     /**
      * Load messages on page load.
      */
+    ser_mes_loadedMessages = [];
     getMessages(dateToSqlDate(-1), ser_mes_MESSAGE_GET_LIMIT);
 
 });
