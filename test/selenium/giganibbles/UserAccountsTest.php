@@ -41,6 +41,13 @@ class UserAccountsTest extends TestBase
         $this->login();
     }
 
+    /**
+     * Tests merging of user pages
+     *
+     * Tests:
+     * - User management element is present on page
+     * - User group management element is present on page
+     */
     public function testMerge()
     {
         // Navigate to user accounts page
@@ -53,6 +60,15 @@ class UserAccountsTest extends TestBase
         $this->assertTrue($this->isElementPresent('byId', "userGroupsForm"));
     }
 
+    /**
+     * Tests for exporting of users and user groups
+     *
+     * Tests:
+     * - Check if single user export code window appears
+     * - Check if multiple user export code window appears
+     * - Check if link for user group exporting is present
+     * - Check if user group export code window appears
+     */
     public function testExport()
     {
         $this->navigateToUserAccounts();
@@ -86,7 +102,7 @@ class UserAccountsTest extends TestBase
     }
 
     /**
-     * Navigates to user accounts page
+     * Helper function to go directly to user accounts page
      */
     private function navigateToUserAccounts()
     {
