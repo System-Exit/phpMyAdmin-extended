@@ -353,3 +353,21 @@ CREATE TABLE IF NOT EXISTS `pma__export_templates` (
 )
   COMMENT='Saved export templates'
   DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pma__messages`
+--
+
+CREATE TABLE IF NOT EXISTS `pma__messages` (
+  `id` integer NOT NULL auto_increment,
+  `sender` varchar(255) NOT NULL,
+  `receiver` varchar(255) NOT NULL,
+  `timestamp` timestamp NOT NULL,
+  `message` varchar(255),
+  `seen` Boolean NOT NULL,
+  PRIMARY KEY  (`id`)
+)
+  COMMENT='Messages storage for messages system'
+  DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;

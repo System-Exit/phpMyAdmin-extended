@@ -2032,6 +2032,7 @@ class Relation
             'pma__central_columns' => 'central_columns',
             'pma__designer_settings' => 'designer_settings',
             'pma__export_templates' => 'export_templates',
+            'pma__messages' => 'messages',
         ];
 
         $existingTables = $GLOBALS['dbi']->getTables($db, DatabaseInterface::CONNECT_CONTROL);
@@ -2186,6 +2187,7 @@ class Relation
             || empty($GLOBALS['cfg']['Server']['central_columns'])
             || empty($GLOBALS['cfg']['Server']['designer_settings'])
             || empty($GLOBALS['cfg']['Server']['export_templates'])
+            || empty($GLOBALS['cfg']['Server']['messages'])
         ) {
             return false;
         }
