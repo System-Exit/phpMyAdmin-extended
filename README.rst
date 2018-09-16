@@ -9,9 +9,9 @@ https://www.phpmyadmin.net/
 Code status
 -----------
 
-.. image:: https://travis-ci.org/RMIT-SEPT/TheGiganibbles.svg?branch=master
+.. image:: https://travis-ci.com/RMIT-SEPT/TheGiganibbles.svg?branch=master
     :alt: Build status
-    :target: https://travis-ci.org/RMIT-SEPT/TheGiganibbles
+    :target: https://travis-ci.com/RMIT-SEPT/TheGiganibbles
 
 
 Download
