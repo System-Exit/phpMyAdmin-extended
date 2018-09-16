@@ -2,33 +2,16 @@ phpMyAdmin
 ==========
 
 A web interface for MySQL and MariaDB.
+Fork from The Giganibbles.
 
 https://www.phpmyadmin.net/
 
 Code status
 -----------
 
-.. image:: https://travis-ci.org/phpmyadmin/phpmyadmin.svg?branch=master
+.. image:: https://travis-ci.org/RMIT-SEPT/TheGiganibbles.svg?branch=master
     :alt: Build status
-    :target: https://travis-ci.org/phpmyadmin/phpmyadmin
-
-.. image:: https://hosted.weblate.org/widgets/phpmyadmin/-/svg-badge.svg
-    :alt: Translation status
-    :target: https://hosted.weblate.org/engage/phpmyadmin/?utm_source=widget
-
-.. image:: https://codecov.io/gh/phpmyadmin/phpmyadmin/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/phpmyadmin/phpmyadmin
-
-.. image:: https://scrutinizer-ci.com/g/phpmyadmin/phpmyadmin/badges/quality-score.png?s=93dfde29ffa5771d9c254b7ffb11c4e673315035
-    :target: https://scrutinizer-ci.com/g/phpmyadmin/phpmyadmin/
-
-.. image:: https://bestpractices.coreinfrastructure.org/projects/213/badge
-    :alt: CII Best Practices
-    :target: https://bestpractices.coreinfrastructure.org/projects/213
-
-.. image:: https://www.browserstack.com/automate/badge.svg?badge_key=V1ppZHdzTThicjY4Ujk5akxYT2xYUT09LS1PVncrNCtkUW9BZXE1Q2xCQkdTMFZRPT0=--91913a0e155fda6f7c942e9dd2da64b3da571c30
-    :alt: BrowserStack
-    :target: https://www.browserstack.com/automate/public-build/V1ppZHdzTThicjY4Ujk5akxYT2xYUT09LS1PVncrNCtkUW9BZXE1Q2xCQkdTMFZRPT0=--91913a0e155fda6f7c942e9dd2da64b3da571c30
+    :target: https://travis-ci.org/RMIT-SEPT/TheGiganibbles
 
 
 Download
