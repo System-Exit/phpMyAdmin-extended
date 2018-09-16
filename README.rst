@@ -9,7 +9,7 @@ https://www.phpmyadmin.net/
 Code status
 -----------
 
-.. image:: https://travis-ci.com/RMIT-SEPT/TheGiganibbles.svg?branch=master
+.. image:: https://travis-ci.com/RMIT-SEPT/TheGiganibbles.svg?token=51rSnQ18GoDiVjsRxzEp&branch=working
     :alt: Build status
     :target: https://travis-ci.com/RMIT-SEPT/TheGiganibbles
 
