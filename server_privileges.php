@@ -504,7 +504,7 @@ else {
         // No username is given --> display the overview and user groups table
         $response->addHTML(
             $serverPrivileges->getHtmlForUserOverview($pmaThemeImage, $text_dir)
-            .$serverPrivileges->getHtmlForUserGroupsTable()
+            . $serverPrivileges->getHtmlForUserGroupsTable()
         );
     } elseif (!empty($routinename)) {
         $response->addHTML(

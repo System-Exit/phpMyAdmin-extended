@@ -1,11 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: lukel
- * Date: 18/08/10
- * Time: 12:52 PM
+ * Menu extension
+ *
+ * @package PhpMyAdmin\Controllers\Giganibbles
  */
-
 namespace PhpMyAdmin\Giganibbles;
 
 /**

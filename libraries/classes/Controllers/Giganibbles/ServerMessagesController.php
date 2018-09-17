@@ -5,6 +5,11 @@
  * Date: 18/08/08
  * Time: 4:58 PM
  */
+/**
+ * Message controller for messages page
+ *
+ * @package PhpMyAdmin\Controllers\Giganibbles
+ */
 declare(strict_types=1);
 
 namespace PhpMyAdmin\Controllers\Giganibbles;
@@ -25,6 +30,11 @@ use PhpMyAdmin\Message;
 class ServerMessagesController extends Controller
 {
 
+    /**
+     * Handles actions to perform on loading the page
+     *
+     * @return void
+     */
     public function indexAction()
     {
         $response = $this->response;
@@ -79,6 +89,8 @@ class ServerMessagesController extends Controller
      *  - 'sender'      : string (must match current user)
      *  - 'receiver'    : string (must be in mysql.user)
      *  - 'message'     : string (not empty)
+     *
+     * @return void
      */
     public function sendAction()
     {

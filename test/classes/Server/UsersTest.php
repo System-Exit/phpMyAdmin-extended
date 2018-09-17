@@ -9,7 +9,9 @@ declare(strict_types=1);
 
 namespace PhpMyAdmin\Tests\Server;
 
-use PhpMyAdmin\Server\Users;
+use PhpMyAdmin\Server\Privileges;
+use PhpMyAdmin\Theme;
+use PhpMyAdmin\Url;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,40 +24,240 @@ use PHPUnit\Framework\TestCase;
 class UsersTest extends TestCase
 {
     /**
-     * Test for Users::getHtmlForSubMenusOnUsersPage
+     * Prepares environment for the test.
      *
      * @return void
      */
-    public function testGetHtmlForSubMenusOnUsersPage()
+    protected function setUp()
     {
-        $GLOBALS['server'] = 1;
         $GLOBALS['cfg']['ServerDefault'] = 1;
-        $GLOBALS['cfg']['Server']['DisableIS'] = false;
-        $html = Users::getHtmlForSubMenusOnUsersPage('server_privileges.php');
+        $GLOBALS['cfg']['ActionLinksMode'] = 'both';
 
-        //validate 1: topmenu2
+        $GLOBALS['server'] = 1;
+        $_SESSION['relation'][$GLOBALS['server']] = [
+            'PMA_VERSION' => PMA_VERSION,
+            'db' => 'pmadb',
+            'users' => 'users',
+            'usergroups' => 'usergroups'
+        ];
+    }
+
+    /**
+     * Tests Privileges::getHtmlForUserGroupsTable() function when there are no user groups
+     *
+     * @return void
+     * @group medium
+     */
+    public function testGetHtmlForUserGroupsTableWithNoUserGroups()
+    {
+        $expectedQuery = "SELECT * FROM `pmadb`.`usergroups`"
+            . " ORDER BY `usergroup` ASC";
+
+        $dbi = $this->getMockBuilder('PhpMyAdmin\DatabaseInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $dbi->expects($this->once())
+            ->method('tryQuery')
+            ->with($expectedQuery)
+            ->will($this->returnValue(true));
+        $dbi->expects($this->once())
+            ->method('numRows')
+            ->withAnyParameters()
+            ->will($this->returnValue(0));
+        $dbi->expects($this->once())
+            ->method('freeResult');
+        $GLOBALS['dbi'] = $dbi;
+
+        $html = Privileges::getHtmlForUserGroupsTable();
+        $this->assertNotContains(
+            '<table id="userGroupsTable">',
+            $html
+        );
+        $url_tag = '<a href="server_.php'
+            . Url::getCommon(['addUserGroup' => 1]);
         $this->assertContains(
-            '<ul id="topmenu2">',
+            $url_tag,
+            $html
+        );
+    }
+
+    /**
+     * Tests Privileges::getHtmlForUserGroupsTable() function when there are user groups
+     *
+     * @return void
+     */
+    public function testGetHtmlForUserGroupsTableWithUserGroups()
+    {
+        $expectedQuery = "SELECT * FROM `pmadb`.`usergroups`"
+            . " ORDER BY `usergroup` ASC";
+
+        $dbi = $this->getMockBuilder('PhpMyAdmin\DatabaseInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $dbi->expects($this->once())
+            ->method('tryQuery')
+            ->with($expectedQuery)
+            ->will($this->returnValue(true));
+        $dbi->expects($this->once())
+            ->method('numRows')
+            ->withAnyParameters()
+            ->will($this->returnValue(1));
+        $dbi->expects($this->at(2))
+            ->method('fetchAssoc')
+            ->withAnyParameters()
+            ->will(
+                $this->returnValue(
+                    [
+                        'usergroup' => 'usergroup',
+                        'tab' => 'server_sql',
+                        'allowed' => 'Y'
+                    ]
+                )
+            );
+        $dbi->expects($this->at(3))
+            ->method('fetchAssoc')
+            ->withAnyParameters()
+            ->will($this->returnValue(false));
+        $dbi->expects($this->once())
+            ->method('freeResult');
+        $GLOBALS['dbi'] = $dbi;
+
+        $html = Privileges::getHtmlForUserGroupsTable();
+        $this->assertContains(
+            '<td>usergroup</td>',
+            $html
+        );
+        $url_tag = '<a class="" href="server_privileges.php'
+            . Url::getCommon(
+                [
+                    'viewUsers' => 1, 'userGroup' => htmlspecialchars('usergroup')
+                ]
+            );
+        $this->assertContains(
+            $url_tag,
+            $html
+        );
+        $url_tag = '<a class="" href="server_privileges.php'
+            . Url::getCommon(
+                [
+                    'editUserGroup' => 1,
+                    'userGroup' => htmlspecialchars('usergroup')
+                ]
+            );
+        $this->assertContains(
+            $url_tag,
+            $html
+        );
+        $url_tag = '<a class="deleteUserGroup ajax" href="server_privileges.php'
+            . Url::getCommon(
+                [
+                    'deleteUserGroup' => 1,
+                    'userGroup' => htmlspecialchars('usergroup')
+                ]
+            );
+        $this->assertContains(
+            $url_tag,
+            $html
+        );
+    }
+
+    /**
+     * Tests Privileges::delete() function
+     *
+     * @return void
+     */
+    public function testDeleteUserGroup()
+    {
+        $userDelQuery = "DELETE FROM `pmadb`.`users`"
+            . " WHERE `usergroup`='ug'";
+        $userGrpDelQuery = "DELETE FROM `pmadb`.`usergroups`"
+            . " WHERE `usergroup`='ug'";
+
+        $dbi = $this->getMockBuilder('PhpMyAdmin\DatabaseInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $dbi->expects($this->at(1))
+            ->method('query')
+            ->with($userDelQuery);
+        $dbi->expects($this->at(3))
+            ->method('query')
+            ->with($userGrpDelQuery);
+        $dbi->expects($this->any())
+            ->method('escapeString')
+            ->will($this->returnArgument(0));
+
+        $GLOBALS['dbi'] = $dbi;
+
+        Privileges::delete('ug');
+    }
+
+    /**
+     * Tests Privileges::getHtmlToEditUserGroup() function
+     *
+     * @return void
+     */
+    public function testGetHtmlToEditUserGroup()
+    {
+        // adding a user group
+        $html = Privileges::getHtmlToEditUserGroup();
+        $this->assertContains(
+            '<input type="hidden" name="addUserGroupSubmit" value="1"',
+            $html
+        );
+        $this->assertContains(
+            '<input type="text" name="userGroup"',
             $html
         );
 
-        //validate 2: tabactive for server_privileges.php
-        $this->assertContains(
-            '<a class="tabactive" href="server_privileges.php',
-            $html
-        );
-        $this->assertContains(
-            __('User accounts overview'),
-            $html
-        );
+        $expectedQuery = "SELECT * FROM `pmadb`.`usergroups`"
+            . " WHERE `usergroup`='ug'";
+        $dbi = $this->getMockBuilder('PhpMyAdmin\DatabaseInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $dbi->expects($this->once())
+            ->method('tryQuery')
+            ->with($expectedQuery)
+            ->will($this->returnValue(true));
+        $dbi->expects($this->exactly(2))
+            ->method('fetchAssoc')
+            ->willReturnOnConsecutiveCalls(
+                [
+                    'usergroup' => 'ug',
+                    'tab' => 'server_sql',
+                    'allowed' => 'Y'
+                ],
+                false
+            );
+        $dbi->expects($this->once())
+            ->method('freeResult');
+        $dbi->expects($this->any())
+            ->method('escapeString')
+            ->will($this->returnArgument(0));
 
-        //validate 3: not-active for server_user_groups.php
+        $GLOBALS['dbi'] = $dbi;
+
+        // editing a user group
+        $html = Privileges::getHtmlToEditUserGroup('ug');
         $this->assertContains(
-            '<a href="server_user_groups.php',
+            '<input type="hidden" name="userGroup" value="ug"',
             $html
         );
         $this->assertContains(
-            __('User groups'),
+            '<input type="hidden" name="editUserGroupSubmit" value="1"',
+            $html
+        );
+        $this->assertContains(
+            '<input type="hidden" name="editUserGroupSubmit" value="1"',
+            $html
+        );
+        $this->assertContains(
+            '<input type="checkbox" class="checkall" checked="checked"'
+            . ' name="server_sql" value="Y" />',
+            $html
+        );
+        $this->assertContains(
+            '<input type="checkbox" class="checkall"'
+            . ' name="server_databases" value="Y" />',
             $html
         );
     }
