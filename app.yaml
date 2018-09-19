@@ -1,0 +1,9 @@
+runtime: php
+env: flex
+
+runtime_config: 
+  document_root: .
+  whitelist_functions: "php_uname, getmypid"
+  
+network:
+  name: giganibbles
