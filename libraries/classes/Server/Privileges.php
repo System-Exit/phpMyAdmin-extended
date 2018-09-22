@@ -5903,7 +5903,7 @@ class Privileges
         // Formatting and returning of list
         $title = __("User Groups");
         $export = "<textarea class=\"export\" cols=\"60\" rows=\"15\">"
-            ."# Values for pma__usergroups table"
+            . "# Values for pma__usergroups table"
             . "\n\n"
             . $groupText
             . "\n\n"
