@@ -45,6 +45,7 @@ class MessagesTest extends TestBase
      * Sets up for testing
      *
      * @throws \Exception
+     * @return void
      */
     protected function setup()
     {
@@ -56,6 +57,8 @@ class MessagesTest extends TestBase
 
     /**
      * Sets up page for each test
+     *
+     * @return void
      */
     public function setUpPage()
     {

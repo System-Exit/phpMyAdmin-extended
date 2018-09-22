@@ -35,6 +35,7 @@ class UserAccountsTest extends TestBase
      * Set up for testing
      *
      * @throws \Exception
+     * @return void
      */
     protected function setup()
     {
@@ -45,6 +46,8 @@ class UserAccountsTest extends TestBase
 
     /**
      * Set up page for each test
+     *
+     * @return void
      */
     public function setUpPage()
     {

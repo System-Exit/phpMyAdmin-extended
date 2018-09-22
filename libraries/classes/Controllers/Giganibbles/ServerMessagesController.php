@@ -280,10 +280,10 @@ class ServerMessagesController extends Controller
      * Sends message to specified receiver with the specified message
      * Id parameter is optional and not recommended for use in anything other than testing
      *
-     * @param string $sender sender of message
+     * @param string $sender   sender of message
      * @param string $receiver receiver of message
-     * @param string $message message to send/store
-     * @param string $id id of user (optional)
+     * @param string $message  message to send/store
+     * @param string $id       id of user (optional)
      *
      * @return string
      */
