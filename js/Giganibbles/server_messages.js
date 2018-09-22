@@ -96,7 +96,7 @@ function messageToHtml (message) {
         '</li>';
 }
 
-    function getOldestMessage () {
+function getOldestMessage () {
     if (ser_mes_loadedMessages.length === 0) {
         return -1;
     }
@@ -262,7 +262,6 @@ AJAX.registerTeardown('Giganibbles/server_messages.js', function () {
     $(document).off('click', '#message_form_send');
     $(document).off('click', '#updateMessages');
 });
-
 /**
  * Bind all event handlers for a page
  */
@@ -274,7 +273,7 @@ AJAX.registerOnload('Giganibbles/server_messages.js', function () {
     $(document).on('click', '#message_form_send', function (event) {
         event.preventDefault();
 
-        $form = $("#sendMessageForm");
+        $form = $('#sendMessageForm');
 
         var msg = PMA_ajaxShowMessage(PMA_messages.strProcessingRequest);
         PMA_prepareForAjaxRequest($form);
