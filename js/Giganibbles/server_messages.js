@@ -262,11 +262,11 @@ AJAX.registerTeardown('Giganibbles/server_messages.js', function () {
     $(document).off('click', '#message_form_send');
     $(document).off('click', '#updateMessages');
 });
+
 /**
  * Bind all event handlers for a page
  */
 AJAX.registerOnload('Giganibbles/server_messages.js', function () {
-
     /**
      * Ajax call for submit button. Sends a message to the database.
      */
