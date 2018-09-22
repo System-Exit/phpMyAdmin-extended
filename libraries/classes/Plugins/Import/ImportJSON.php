@@ -1,9 +1,8 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: rocky
- * Date: 9/3/2018
- * Time: 4:45 PM
+ * Import JSON files into database
+ *
+ * @package PhpMyAdmin/Plugins/Import
  */
 
 declare(strict_types=1);
@@ -24,7 +23,7 @@ use PhpMyAdmin\Relation;
  * Only data is imported, as exported tables lack a structure specification
  * This can be updated alongside the JSON export if we want to include structure as well
  *
- * @package    PhpMyAdmin-Import
+ * @package    PhpMyAdmin/Plugins/Import
  * @subpackage XML
  */
 class ImportJSON extends ImportPlugin

@@ -5862,6 +5862,11 @@ class Privileges
         $relation->queryAsControlUser($sql_query, true);
     }
 
+    /**
+     * Get title and textarea for export user groups definition
+     *
+     * @return array
+     */
     public function getListForExportUserGroups()
     {
         $relation = new Relation();
