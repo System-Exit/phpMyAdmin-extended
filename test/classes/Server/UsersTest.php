@@ -73,7 +73,7 @@ class UsersTest extends TestCase
             '<table id="userGroupsTable">',
             $html
         );
-        $url_tag = '<a href="server_.php'
+        $url_tag = '<a href="server_privileges.php'
             . Url::getCommon(['addUserGroup' => 1]);
         $this->assertContains(
             $url_tag,
