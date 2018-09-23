@@ -39,6 +39,11 @@ class MenuExtension
             $tabs['messages']['link'] = 'server_messages.php';
             $tabs['messages']['text'] = __('Messages');
 
+            // user stats page
+            $tabs['stats']['icon'] = 's_rights';
+            $tabs['stats']['link'] = 'server_user_stats.php';
+            $tabs['stats']['text'] = __('User Statistics');
+
         }
         return $tabs;
     }
@@ -62,6 +67,7 @@ class MenuExtension
         if ($level == 'server')
         {
             $tablist['messages'] = __('Messages');
+            $tablist['stats'] = __('User Statistics');
         }
         return $tablist;
     }

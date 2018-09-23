@@ -1,0 +1,29 @@
+<h1 id="user_stats_header">Your Statistics</h1>
+<group id="user_stats_info"><!-- Begin basic user status -->
+    <h2>User Information</h2>
+    <ul class="user_stats_info_list">
+        <li>Name: {{ info_list.name|escape }}</li>
+        <li>Date Created: {{ info_list.date|escape }}</li>
+        <li>Server: {{ info_list.server|escape }}</li>
+    </ul>
+</group><!-- End basic user stats -->
+<group id="user_stats_permissions"><!-- Begin permissions -->
+    <h2>Permissions</h2>
+    <ul class="user_stats_permissions_list">
+        {% for value in permissions %}
+            <li>{{ value|escape }}</li>
+        {% endfor %}
+    </ul>
+</group><!-- End permissions -->
+<group id="user_stats_usage"><!-- Begin usage stats -->
+    <h2>Usage Statistics</h2>
+    <ul class="user_stats_usage_list">
+        {% for usage in usage_list %}
+            <li>{{ usage.type|escape }}: {{ usage.value|escape }}</li>
+        {% endfor %}
+    </ul>
+</group><!-- End usage stats -->
+<group id="user_stats_export">
+    <h2>Export</h2>
+    <p>do something with exporting!</p>
+</group>
