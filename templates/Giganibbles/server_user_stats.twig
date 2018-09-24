@@ -9,8 +9,15 @@
 </group><!-- End basic user stats -->
 <group id="user_stats_permissions"><!-- Begin permissions -->
     <h2>Permissions</h2>
+    <h3>PHP My Admin User</h3>
     <ul class="user_stats_permissions_list">
-        {% for value in permissions %}
+        {% for value in permissions.pma %}
+            <li>{{ value|escape }}</li>
+        {% endfor %}
+    </ul>
+    <h3>MySql User</h3>
+    <ul class="user_stats_permissions_list">
+        {% for value in permissions.mysql %}
             <li>{{ value|escape }}</li>
         {% endfor %}
     </ul>
