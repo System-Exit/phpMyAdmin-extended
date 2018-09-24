@@ -21,7 +21,8 @@ use PhpMyAdmin\Relation;
 /**
  * Handles the import for the JSON format
  * Only data is imported, as exported tables lack a structure specification
- * This can be updated alongside the JSON export if we want to include structure as well
+ * This can be updated alongside the JSON export if we want to include
+ * structure as well
  *
  * @package    PhpMyAdmin/Plugins/Import
  * @subpackage XML
@@ -61,6 +62,7 @@ class ImportJSON extends ImportPlugin
      * @param array &$sql_data 2-element array with sql data
      *
      * @return void
+     * @throws \Exception when the import fails to parse data.
      */
     public function doImport(array &$sql_data = [])
     {
@@ -80,9 +82,11 @@ class ImportJSON extends ImportPlugin
                 /* subtract data we didn't handle yet and stop processing */
                 $GLOBALS['offset'] -= strlen($buffer);
                 break;
-            } elseif ($data === true) {
+            }
+            elseif ($data === true) {
                 /* Handle rest of buffer */
-            } else {
+            }
+            else {
                 /* Append new data to buffer */
                 $buffer .= $data;
                 unset($data);
@@ -94,14 +98,13 @@ class ImportJSON extends ImportPlugin
         /**
          * Load the JSON string
          */
-        $data = json_decode($buffer,true);
+        $data = json_decode($buffer, true);
 
         /**
          * Check if decoding was successful
          */
-        if(!isset($data) || is_null($data))
-        {
-            // TODO: error message
+        if (!isset($data) || is_null($data)) {
+            throw new \Exception("Data could not be parsed.");
         }
 
         /**
@@ -114,30 +117,35 @@ class ImportJSON extends ImportPlugin
          * Also uses r
          */
         $relation = new Relation();
-        foreach($data as $sect)
-        {
-            if($sect["type"] == "table")
-            {
+        foreach ($data as $sect) {
+            if ($sect["type"] == "table") {
                 $tableName = $sect["name"];
                 $tableDatabase = $sect["database"];
                 $tableData = $sect["data"];
-                foreach($tableData as $row)
-                {
+                foreach ($tableData as $row) {
                     // Start of insert, specifies table
                     $query = "INSERT INTO `$tableDatabase`.`$tableName` (";
                     // Specifies the columns to insert data for
-                    foreach ($row as $key => $value)
-                    {
+                    foreach ($row as $key => $value) {
                         $query .= "$key,";
                     }
-                    $query = substr_replace($query, ")", strrpos($query, ","), 1);
+                    $query = substr_replace(
+                        $query,
+                        ")",
+                        strrpos($query, ","),
+                        1
+                    );
                     $query .= " VALUES(";
                     // Specifies data values to insert
-                    foreach ($row as $value)
-                    {
+                    foreach ($row as $value) {
                         $query .= "'$value',";
                     }
-                    $query = substr_replace($query, ")", strrpos($query, ","), 1);
+                    $query = substr_replace(
+                        $query,
+                        ")",
+                        strrpos($query, ","),
+                        1
+                    );
                     $query .= ";";
                     $relation->queryAsControlUser($query, true);
                 }
