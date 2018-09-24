@@ -1,11 +1,5 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: lukel
- * Date: 18/08/08
- * Time: 4:58 PM
- */
-/**
  * Message controller for messages page
  *
  * @package PhpMyAdmin\Controllers\Giganibbles
@@ -94,7 +88,7 @@ class ServerUserStatsController extends Controller
      * Used to change a permissions array to a list of key => value (column name
      * => column value) pairs to a printable format. These will be placed in an
      * unassociated array for printing.
-     * @param $permissions array full list of pairs to print, for both 'pma' and
+     * @param array $permissions array full list of pairs to print, for both 'pma' and
      *                           'mysql' user databases.
      *
      * @return array An array, where each value contains an unassociated array
