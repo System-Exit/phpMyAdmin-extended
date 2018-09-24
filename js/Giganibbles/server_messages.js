@@ -12,13 +12,13 @@ var ser_mes_loadedMessages = [];
 
 // all functions
 
-function displayMessageError(id, reason) {
+function displayMessageError (id, reason) {
     reason = reason || 'Unexpected error occurred.';
     var message = 'Error ' + id + ' : ' + reason;
     PMA_ajaxShowMessage(message, false, 'error');
 }
 
-function dateToSqlDate(datetime, local) {
+function dateToSqlDate (datetime, local) {
     if (typeof local === 'undefined' || local === null) {
         local = false;
     }
@@ -50,7 +50,7 @@ function dateToSqlDate(datetime, local) {
  * @param datetime
  * @returns {Date} UTC date
  */
-function getUTCDate(datetime) {
+function getUTCDate (datetime) {
     if (typeof datetime === 'undefined' || datetime === null) {
         datetime = new Date();
     }
@@ -64,7 +64,7 @@ function getUTCDate(datetime) {
     ));
 }
 
-function convertUTCToLocal(datetimeString) {
+function convertUTCToLocal (datetimeString) {
     var dateUTC = new Date(datetimeString);
     var offset = dateUTC.getTimezoneOffset();
     dateUTC.setMinutes(dateUTC.getMinutes() - offset);
@@ -78,7 +78,7 @@ function convertUTCToLocal(datetimeString) {
  * @param message
  * @returns {string}
  */
-function messageToHtml(message) {
+function messageToHtml (message) {
     if (
         message.id === null ||
         message.message === null ||
@@ -86,17 +86,17 @@ function messageToHtml(message) {
         message.timestamp === null ||
         message.seen === null
     ) {
-        throw "Error converting message '" + message + "' to HTML.";
+        throw 'Error converting message \'' + message + '\' to HTML.';
     }
-    return "<li class=\"message_body\">" +
-        "<p class=\"message_sender\">Sender: <strong>" + message.sender + "</strong></p>" +
-        "<p class=\"message_timestamp\">Time: <strong>" + message.timestamp + "</strong></p>" +
-        (message.seen === false ? "<p class=\"message_new\">NEW</p>" : "") +
-        "<p class=\"message_message\">" + message.message + "</p>\n" +
-        "</li>";
+    return '<li class="message_body">' +
+        '<p class="message_sender">Sender: <strong>' + message.sender + '</strong></p>' +
+        '<p class="message_timestamp">Time: <strong>' + message.timestamp + '</strong></p>' +
+        (message.seen === false ? '<p class="message_new">NEW</p>' : '') +
+        '<p class="message_message">' + message.message + '</p>\n' +
+        '</li>';
 }
 
-function getOldestMessage() {
+function getOldestMessage () {
     if (ser_mes_loadedMessages.length === 0) {
         return -1;
     }
@@ -110,7 +110,7 @@ function getOldestMessage() {
     return lowestDate;
 }
 
-function seenMessages() {
+function seenMessages () {
     var unseen = [];
     var addTo = 0;
     for (var m in ser_mes_loadedMessages) {
@@ -128,17 +128,17 @@ function seenMessages() {
             ajax_page_request   : false
         };
         $.ajax({
-            url: "server_messages.php",
+            url: 'server_messages.php',
             method: 'POST',
             dataType: 'json',
             data: toServer,
-            success: function(response) {
+            success: function (response) {
                 console.log(response);
                 if (
                     typeof response.seen === 'undefined' ||
                     response.success === false
                 ) {
-                    var $errorMessage = "An error was encountered when attempting to mark messages as 'seen'.";
+                    var $errorMessage = 'An error was encountered when attempting to mark messages as \'seen\'.';
                     console.error($errorMessage);
                     displayMessageError(ser_mes_ERROR_SERVER_SEEN, $errorMessage);
                     return;
@@ -151,16 +151,15 @@ function seenMessages() {
                     }
                 }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error(textStatus + " : " + errorThrown);
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error(textStatus + ' : ' + errorThrown);
                 displayMessageError(ser_mes_ERROR_SERVER_SEEN, errorThrown);
             }
         });
     }
 }
 
-function getMessages(lastDate, limit) {
-
+function getMessages (lastDate, limit) {
     var msg = PMA_ajaxShowMessage(PMA_messages.strProcessingRequest);
 
     var toServer = {
@@ -171,18 +170,18 @@ function getMessages(lastDate, limit) {
         ajax_page_request : false
     };
     $.ajax({
-        url: "server_messages.php",
+        url: 'server_messages.php',
         method: 'POST',
         dataType: 'json',
         data: toServer,
-        success: function(response) {
+        success: function (response) {
             PMA_ajaxRemoveMessage(msg);
 
             // fatal error getting data
             if (typeof response.data === 'undefined') {
                 displayMessageError(
                     ser_mes_ERROR_SERVER_GET_FATAL,
-                    "Fatal error getting messages from server."
+                    'Fatal error getting messages from server.'
                 );
                 return;
             }
@@ -192,8 +191,8 @@ function getMessages(lastDate, limit) {
                 typeof response.data === 'object' &&
                 Object.keys(response.data).length === 0
             ) {
-                if ($("#no_messages").length > 0) {
-                    $("#no_messages").remove();
+                if ($('#no_messages').length > 0) {
+                    $('#no_messages').remove();
                 }
                 var endMessage = '';
                 if (ser_mes_loadedMessages.length > 0) {
@@ -201,7 +200,7 @@ function getMessages(lastDate, limit) {
                 } else {
                     endMessage = 'You have no messages.';
                 }
-                $("#message_container").append(
+                $('#message_container').append(
                     '<li id="no_messages" class="no_messages">' + endMessage + '</li>'
                 );
                 return;
@@ -216,7 +215,7 @@ function getMessages(lastDate, limit) {
                     'message'   : response.data[e].message,
                     'sender'    : response.data[e].sender,
                     'timestamp' : response.data[e].timestamp,
-                    'seen'      : (response.data[e].seen == 'true' || response.data[e].seen == '1')
+                    'seen'      : (response.data[e].seen === 'true' || response.data[e].seen === '1')
                 };
                 // change timestamp to current datetime
                 message.timestamp = convertUTCToLocal(message.timestamp);
@@ -225,14 +224,14 @@ function getMessages(lastDate, limit) {
                 ser_mes_loadedMessages[response.data[e].id] = message;
 
                 // if no messages are present, delete 'no message' element
-                if ($("#no_messages").length > 0) {
-                    $("#messageBox").html("<li id='message_container'></li>");
+                if ($('#no_messages').length > 0) {
+                    $('#messageBox').html('<li id=\'message_container\'></li>');
                 }
 
                 // add element to page
                 try {
-                    $("#message_container").append(messageToHtml(message));
-                } catch(error) {
+                    $('#message_container').append(messageToHtml(message));
+                } catch (error) {
                     foundError = true;
                 }
             }
@@ -241,7 +240,7 @@ function getMessages(lastDate, limit) {
             if (foundError === true) {
                 displayMessageError(
                     ser_mes_ERROR_SERVER_DISPLAYED,
-                    "An error was encountered when attempting to display the messages"
+                    'An error was encountered when attempting to display the messages'
                 );
             } else {
                 // send message to server, telling it that the messages have
@@ -249,12 +248,11 @@ function getMessages(lastDate, limit) {
                 seenMessages();
             }
         },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.error(textStatus + " : " + errorThrown);
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error(textStatus + ' : ' + errorThrown);
             displayMessageError(ser_mes_ERROR_SERVER_GET, errorThrown);
         }
     });
-
 }
 
 /**
@@ -265,15 +263,17 @@ AJAX.registerTeardown('Giganibbles/server_messages.js', function () {
     $(document).off('click', '#updateMessages');
 });
 
+/**
+ * Bind all event handlers for a page
+ */
 AJAX.registerOnload('Giganibbles/server_messages.js', function () {
-
     /**
      * Ajax call for submit button. Sends a message to the database.
      */
     $(document).on('click', '#message_form_send', function (event) {
         event.preventDefault();
 
-        $form = $("#sendMessageForm");
+        $form = $('#sendMessageForm');
 
         var msg = PMA_ajaxShowMessage(PMA_messages.strProcessingRequest);
         PMA_prepareForAjaxRequest($form);
@@ -290,14 +290,12 @@ AJAX.registerOnload('Giganibbles/server_messages.js', function () {
             function (data) {
                 PMA_ajaxRemoveMessage(msg);
                 if (data !== 'undefined' && data.success === true) {
-
                     // clear message from text area
                     $('#form_message').val('');
                     $('#form_receiver').val('');
 
                     // display success message
                     PMA_ajaxShowMessage(data.message, 5000);
-
                 } else if (data !== 'undefined' && data.success === false) {
                     PMA_ajaxShowMessage(data.error, false);
                 } else {
@@ -322,5 +320,4 @@ AJAX.registerOnload('Giganibbles/server_messages.js', function () {
      */
     ser_mes_loadedMessages = [];
     getMessages(dateToSqlDate(-1), ser_mes_MESSAGE_GET_LIMIT);
-
 });

@@ -1,11 +1,5 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: lukel
- * Date: 18/08/08
- * Time: 4:58 PM
- */
-/**
  * Message controller for messages page
  *
  * @package PhpMyAdmin\Controllers\Giganibbles
@@ -203,8 +197,7 @@ class ServerMessagesController extends Controller
     /**
      *  Queries and returns the messages that the specified user has received
      *
-     * @return string array of strings of data found from query
-     * @return boolean false on failure to retrieve any messages
+     * @return string array of strings of data found from query, false if fail
      */
     public function getMessages()
     {
@@ -287,12 +280,12 @@ class ServerMessagesController extends Controller
      * Sends message to specified receiver with the specified message
      * Id parameter is optional and not recommended for use in anything other than testing
      *
-     * @param $sender
-     * @param $receiver
-     * @param $message
-     * @param $id optional
+     * @param string $sender   sender of message
+     * @param string $receiver receiver of message
+     * @param string $message  message to send/store
+     * @param string $id       id of user (optional)
      *
-     * @return boolean
+     * @return string
      */
     public function sendMessage($sender, $receiver, $message, $id = null)
     {
@@ -313,9 +306,9 @@ class ServerMessagesController extends Controller
     /**
      *  Deletes message specified by message id
      *
-     * @param $id
+     * @param string $id id number of message to delete
      *
-     * @return boolean
+     * @return string query delete result
      */
     public function deleteMessage($id)
     {
@@ -324,6 +317,8 @@ class ServerMessagesController extends Controller
 
         return $relation->queryAsControlUser($query, true);
     }
+
+    /*No idea why this function is here, delete if not needed.
 
     private function getReadOrStatement(Array $idList)
     {
@@ -341,4 +336,5 @@ class ServerMessagesController extends Controller
         }
         return $query;
     }
+    */
 }

@@ -5862,6 +5862,11 @@ class Privileges
         $relation->queryAsControlUser($sql_query, true);
     }
 
+    /**
+     * Get title and textarea for export user groups definition
+     *
+     * @return array
+     */
     public function getListForExportUserGroups()
     {
         $relation = new Relation();
@@ -5898,7 +5903,7 @@ class Privileges
         // Formatting and returning of list
         $title = __("User Groups");
         $export = "<textarea class=\"export\" cols=\"60\" rows=\"15\">"
-            ."# Values for pma__usergroups table"
+            . "# Values for pma__usergroups table"
             . "\n\n"
             . $groupText
             . "\n\n"

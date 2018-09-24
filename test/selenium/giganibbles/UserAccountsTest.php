@@ -1,14 +1,17 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: rocky
- * Date: 8/18/2018
- * Time: 11:33 AM
+ * Selenium tests for user accounts testing
+ *
+ * @package PhpMyAdmin/Tests/Selenium
  */
 
 namespace PhpMyAdmin\Tests\Selenium;
 
-
+/**
+ * Class UserAccountsTest
+ *
+ * @package PhpMyAdmin\Tests\Selenium
+ */
 class UserAccountsTest extends TestBase
 {
 
@@ -28,6 +31,12 @@ class UserAccountsTest extends TestBase
      */
     protected $testHost;
 
+    /**
+     * Set up for testing
+     *
+     * @throws \Exception
+     * @return void
+     */
     protected function setup()
     {
         parent::setUp();
@@ -35,6 +44,11 @@ class UserAccountsTest extends TestBase
         $this->testHost = $GLOBALS['TESTSUITE_SERVER'];
     }
 
+    /**
+     * Set up page for each test
+     *
+     * @return void
+     */
     public function setUpPage()
     {
         parent::setUpPage();
@@ -47,6 +61,8 @@ class UserAccountsTest extends TestBase
      * Tests:
      * - User management element is present on page
      * - User group management element is present on page
+     *
+     * @return void
      */
     public function testMerge()
     {
@@ -68,6 +84,8 @@ class UserAccountsTest extends TestBase
      * - Check if multiple user export code window appears
      * - Check if link for user group exporting is present
      * - Check if user group export code window appears
+     *
+     * @return void
      */
     public function testExport()
     {
@@ -75,7 +93,7 @@ class UserAccountsTest extends TestBase
 
         // Test if user export text appears
         $this->waitForElement('byXPath', "//a[contains(@href, '$this->testUser')"
-            ." and contains(@href, '$this->testHost')]")->click();
+            . " and contains(@href, '$this->testHost')]")->click();
         $this->waitAjax();
         $this->assertTrue($this->isElementPresent('byXPath', "//div[@class='CodeMirror-lines']"));
 
@@ -103,6 +121,8 @@ class UserAccountsTest extends TestBase
 
     /**
      * Helper function to go directly to user accounts page
+     *
+     * @return void
      */
     private function navigateToUserAccounts()
     {

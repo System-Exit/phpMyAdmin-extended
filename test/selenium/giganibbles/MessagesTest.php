@@ -1,9 +1,8 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: rocky
- * Date: 8/17/2018
- * Time: 1:11 PM
+ * Selenium tests for testing messaging system
+ *
+ * @package PhpMyAdmin/Tests/Selenium
  */
 
 namespace PhpMyAdmin\Tests\Selenium;
@@ -11,6 +10,11 @@ namespace PhpMyAdmin\Tests\Selenium;
 
 use PhpMyAdmin\Relation;
 
+/**
+ * Class MessagesTest
+ *
+ * @package PhpMyAdmin\Tests\Selenium
+ */
 class MessagesTest extends TestBase
 {
     /**
@@ -37,6 +41,12 @@ class MessagesTest extends TestBase
      */
     private $message;
 
+    /**
+     * Sets up for testing
+     *
+     * @throws \Exception
+     * @return void
+     */
     protected function setup()
     {
         parent::setUp();
@@ -45,6 +55,11 @@ class MessagesTest extends TestBase
         $this->message = "Selenium test message";
     }
 
+    /**
+     * Sets up page for each test
+     *
+     * @return void
+     */
     public function setUpPage()
     {
         parent::setUpPage();
@@ -57,6 +72,8 @@ class MessagesTest extends TestBase
      * Tests:
      * - if sent message is present in message database
      * - if new message is visible on loaded page
+     *
+     * @return void
      */
     public function testSendMessage()
     {
@@ -114,6 +131,8 @@ class MessagesTest extends TestBase
      * - Created message is visible on messages page
      * - Message is marked as new when first loaded
      * - Message is not marked when loaded again
+     *
+     * @return void
      */
     public function testMessageReceive()
     {
@@ -151,6 +170,8 @@ class MessagesTest extends TestBase
 
     /**
      * Helper function to go directly to messages page
+     *
+     * @return void
      */
     private function goToMessagesPage()
     {
@@ -164,6 +185,8 @@ class MessagesTest extends TestBase
 
     /**
      * Helper function to remove all created test messages
+     *
+     * @return void
      */
     private function deleteTestMessages()
     {
