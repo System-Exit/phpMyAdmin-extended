@@ -5,5 +5,5 @@ runtime_config:
   document_root: .
   whitelist_functions: "php_uname, getmypid"
   
-network:
-  name: giganibbles
+beta_settings:
+  cloud_sql_instances: "the-giganibbles-phpmyadmin:australia-southeast1:the-giganibbles-mysql"
