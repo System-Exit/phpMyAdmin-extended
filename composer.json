@@ -50,6 +50,8 @@
         "phpmyadmin/shapefile": "^2.0",
         "phpseclib/phpseclib": "^2.0",
         "google/recaptcha": "^1.1",
+		"google/cloud-logging",
+		"google/cloud-error-reporting",
         "psr/container": "^1.0",
         "twig/twig": "^2.4",
         "twig/extensions": "~1.5.1",
