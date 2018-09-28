@@ -13,6 +13,10 @@ env:
   global:
   - TESTSUITE_USER=root
   - TESTSUITE_URL=http://127.0.0.1:8000
+before_install:
+- ssh-keygen -q -N "" -f ~/.ssh/google_compute_engine
+- openssl aes-256-cbc -K $encrypted_bbde23cb8be5_key -iv $encrypted_bbde23cb8be5_iv
+  -in travis-gae-keyfile.json.enc -out .\\travis-gae-keyfile.json -d
 install:
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then source ~/virtualenv/python3.6/bin/activate
   ; fi
@@ -89,6 +93,3 @@ deploy:
   keyfile: travis-gae-keyfile.json
   project: the-giganibbles-phpmyadmin
   on: working
-before_install:
-- openssl aes-256-cbc -K $encrypted_bbde23cb8be5_key -iv $encrypted_bbde23cb8be5_iv
-  -in travis-gae-keyfile.json.enc -out .\\travis-gae-keyfile.json -d
