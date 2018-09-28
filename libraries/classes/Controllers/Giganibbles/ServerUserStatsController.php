@@ -32,22 +32,22 @@ class ServerUserStatsController extends Controller
     public function indexAction()
     {
         global $cfg;
-        $relation = new Relation();
+
+        $user = $cfg['Server']['user'];
+        $host = $cfg['Server']['host'];
 
         // Get user information
         $info_list = [
-            'name'      => $cfg['Server']['user'],
-            // TODO: Get date of user creation
-            'date'      => 'None',
-            'server'    => $cfg['Server']['host']
+            'name'      => $user,
+            'date'      => 'None', // TODO: Get date of user creation
+            'server'    => $host
         ];
         // Get user permissions
-        //$query = "SELECT mysql.db";
-        //$rawPermissions;
         $permissions = [
-            'pma'       => $this->getUserPmaPrivs($cfg['Server']['user']),
-            'mysql'     => []
+            'pma'       => $this->getUserPmaPrivs($user),
+            'mysql'     => $this->getUserMySqlPrivs($user, $host)
         ];
+        // Get user usage statistics
         $usage_list = [
             ['type' => 'None', 'value' => 'None']
         ];
@@ -63,23 +63,50 @@ class ServerUserStatsController extends Controller
     }
 
     /**
-     * Accesses user permissions from the mysql database. Use this to append to
-     * the total permission list.
+     * Accesses user permissions from the mysql database. This will build
+     * @param string $user Username of user to get privileges for
+     * @param string $host Host of user to get privileges for
      * @return array An array of all values to be added. All values are returned
-     *               as key => value pairs, where the column name is the key and
-     *               the column value is the value.
+     *               as strings to be listed onto the page.
      */
-    private function getUserMySqlPrivs() : array {
-        return null;
+    private function getUserMySqlPrivs($user, $host) : array {
+        $relation = new Relation();
+
+        // Get the permissions for the user
+        $query = "SELECT * "
+            . "FROM mysql.user "
+            . "WHERE user = '$user' "
+            . "AND host = '$host'; ";
+        $result = $relation->queryAsControlUser($query);
+
+        // Parse through all permissions and add them to categories
+        $privilegeCategories = $this->extractSqlPermissions($result);
+        // Build strings for each non-empty category and adds it to privileges strings
+        $privilegesStrings = [];
+        foreach($privilegeCategories as $category => $privileges)
+        {
+            // Check if category is empty, skipping category if so
+            if(sizeof($privileges) == 0) continue;
+
+            // Create and add string to privileges strings
+            $catToAdd = "$category: ";
+            for ($i = 0; $i < count($privileges); $i++) {
+                $catToAdd .= str_replace("_", " ", $privileges[$i]) . ", ";
+            }
+            $catToAdd = rtrim($catToAdd, ", ");
+            $privilegesStrings[] = $catToAdd;
+        }
+
+        return $privilegesStrings;
     }
 
     /**
-     * Accesses user permissions from the PMA usergroups list. This data is
-     * appended to the permissions list.
-     * @param string $user username of user to get user group permissions from
+     * Accesses user permissions from the PMA usergroups list. This will build a string of
+     * permissions for each category (Server, Database, Table) of tabs and return them
+     * in an array.
+     * @param string $user Username of user to get user group permissions from
      * @return array An array of all values to be added. All values are returned
-     *               as key => value pairs, where the column name is the key and
-     *               the column value is the value.
+     *               as strings to be listed onto the page.
      */
     private function getUserPmaPrivs($user) : array {
         $relation = new Relation();
@@ -97,7 +124,7 @@ class ServerUserStatsController extends Controller
         // Get the permissions for the user group
         $query = "SELECT * "
             . "FROM phpmyadmin.pma__usergroups "
-            . "WHERE usergroup = '$usergroup'";
+            . "WHERE usergroup = '$usergroup'; ";
         $result = $relation->queryAsControlUser($query);
 
         // Parse through server, database and table level tab permissions
@@ -117,7 +144,7 @@ class ServerUserStatsController extends Controller
             if(strpos($row['tab'], "table_") !== false)
                 $privilegeCategories['Table'][] = explode('table_', $row['tab'])[1];
         }
-        
+
         // Build strings for each non-empty category and adds it to privileges strings
         foreach($privilegeCategories as $category => $privileges)
         {
@@ -139,6 +166,7 @@ class ServerUserStatsController extends Controller
 
     /**
      * Convenience method for getting the usergroup of the current user.
+     * @param string $user User name of user to get user group of
      * @return mixed A usergroup for the current user, or null if the user has
      *               not been assigned a usergroup.
      */
@@ -154,6 +182,53 @@ class ServerUserStatsController extends Controller
 
         // Return user group
         return $row['usergroup'];
+    }
+
+    /**
+     * Method for categorizing and prettifying privileges from actual privilege names
+     * @param array $result Result of user privileges query
+     * @return array Array of categorized privileges
+     */
+    private function extractSqlPermissions($result)
+    {
+        // Parse through all permissions and add them to categories
+        $privilegeCategories['Data'] = [];
+        $privilegeCategories['Structure'] = [];
+        $privilegeCategories['Administration'] = [];
+        $row = $result->fetch_assoc();
+        // Data privileges
+        if($row['Select_priv'] == 'Y')              $privilegeCategories['Data'][] = "select";
+        if($row['Insert_priv'] == 'Y')              $privilegeCategories['Data'][] = "insert";
+        if($row['Update_priv'] == 'Y')              $privilegeCategories['Data'][] = "update";
+        if($row['Delete_priv'] == 'Y')              $privilegeCategories['Data'][] = "delete";
+        if($row['File_priv'] == 'Y')                $privilegeCategories['Data'][] = "file";
+        // Structure privileges
+        if($row['Create_priv'] == 'Y')              $privilegeCategories['Structure'][] = "create";
+        if($row['Alter_priv'] == 'Y')               $privilegeCategories['Structure'][] = "alter";
+        if($row['Index_priv'] == 'Y')               $privilegeCategories['Structure'][] = "index";
+        if($row['Drop_priv'] == 'Y')                $privilegeCategories['Structure'][] = "drop";
+        if($row['Create_tmp_table_priv'] == 'Y')    $privilegeCategories['Structure'][] = "create temporary tables";
+        if($row['Show_view_priv'] == 'Y')           $privilegeCategories['Structure'][] = "show view";
+        if($row['Create_routine_priv'] == 'Y')      $privilegeCategories['Structure'][] = "create routine";
+        if($row['Alter_routine_priv'] == 'Y')       $privilegeCategories['Structure'][] = "alter routine";
+        if($row['Execute_priv'] == 'Y')             $privilegeCategories['Structure'][] = "execute";
+        if($row['Create_view_priv'] == 'Y')         $privilegeCategories['Structure'][] = "create view";
+        if($row['Event_priv'] == 'Y')               $privilegeCategories['Structure'][] = "event";
+        if($row['Trigger_priv'] == 'Y')             $privilegeCategories['Structure'][] = "trigger";
+        // Administration privileges
+        if($row['Grant_priv'] == 'Y')               $privilegeCategories['Administration'][] = "grant";
+        if($row['Super_priv'] == 'Y')               $privilegeCategories['Administration'][] = "super";
+        if($row['Process_priv'] == 'Y')             $privilegeCategories['Administration'][] = "process";
+        if($row['Reload_priv'] == 'Y')              $privilegeCategories['Administration'][] = "reload";
+        if($row['Shutdown_priv'] == 'Y')            $privilegeCategories['Administration'][] = "shutdown";
+        if($row['Show_db_priv'] == 'Y')             $privilegeCategories['Administration'][] = "show databases";
+        if($row['Lock_tables_priv'] == 'Y')         $privilegeCategories['Administration'][] = "lock tables";
+        if($row['References_priv'] == 'Y')          $privilegeCategories['Administration'][] = "references";
+        if($row['Repl_client_priv'] == 'Y')         $privilegeCategories['Administration'][] = "replication client";
+        if($row['Repl_slave_priv'] == 'Y')          $privilegeCategories['Administration'][] = "replication slave";
+        if($row['Create_user_priv'] == 'Y')         $privilegeCategories['Administration'][] = "create user";
+
+        return $privilegeCategories;
     }
 
     /**
@@ -207,5 +282,4 @@ class ServerUserStatsController extends Controller
         }
         return $output;
     }
-
 }
