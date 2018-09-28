@@ -15,8 +15,8 @@ env:
   - TESTSUITE_URL=http://127.0.0.1:8000
 before_install:
 - ssh-keygen -q -N "" -f ~/.ssh/google_compute_engine
-- openssl aes-256-cbc -K $encrypted_bbde23cb8be5_key -iv $encrypted_bbde23cb8be5_iv
-  -in travis-gae-keyfile.json.enc -out .\\travis-gae-keyfile.json -d
+- openssl aes-256-cbc -K $encrypted_93cd6078427b_key -iv $encrypted_93cd6078427b_iv
+  -in travis-gae-keyfile.json.enc -out travis-gae-keyfile.json -d
 install:
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then source ~/virtualenv/python3.6/bin/activate
   ; fi
