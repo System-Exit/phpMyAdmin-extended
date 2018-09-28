@@ -91,6 +91,7 @@ class ServerUserStatsController extends Controller
         {
             return ["User has no user group and is not restricted by tab view."];
         }
+
         // Start string array to return with name of user group
         $privilegesStrings = ["User group: $usergroup"];
         // Get the permissions for the user group
@@ -98,8 +99,11 @@ class ServerUserStatsController extends Controller
             . "FROM phpmyadmin.pma__usergroups "
             . "WHERE usergroup = '$usergroup'";
         $result = $relation->queryAsControlUser($query);
+
         // Parse through server, database and table level tab permissions
-        $privileges = [];
+        $privilegeCategories['Server'] = [];
+        $privilegeCategories['Database'] = [];
+        $privilegeCategories['Table'] = [];
         while($row = $result->fetch_assoc())
         {
             // Skip row if privilege is not allowed
@@ -107,40 +111,23 @@ class ServerUserStatsController extends Controller
 
             // Determine privilege category and store it in privileges array
             if(strpos($row['tab'], "server_") !== false)
-                $privileges['Server'][] = explode('server_', $row['tab'])[1];
+                $privilegeCategories['Server'][] = explode('server_', $row['tab'])[1];
             if(strpos($row['tab'], "db_") !== false)
-                $privileges['Database'][] = explode('db_', $row['tab'])[1];
+                $privilegeCategories['Database'][] = explode('db_', $row['tab'])[1];
             if(strpos($row['tab'], "table_") !== false)
-                $privileges['Table'][] = explode('table_', $row['tab'])[1];
+                $privilegeCategories['Table'][] = explode('table_', $row['tab'])[1];
         }
-        // Build strings for each category that has a valid permission and adds it to privileges strings
-        // Each privilege has all '_' replaces with spaces for readability and is separated by commas
-        if(isset($privileges['Server']))
+        
+        // Build strings for each non-empty category and adds it to privileges strings
+        foreach($privilegeCategories as $category => $privileges)
         {
-            $catToAdd = "Server: ";
-            for($i = 0; $i < count($privileges['Server']); $i++)
-            {
-                $catToAdd .= str_replace("_", " ", $privileges['Server'][$i]).", ";
-            }
-            $catToAdd = rtrim($catToAdd, ", ");
-            $privilegesStrings[] = $catToAdd;
-        }
-        if(isset($privileges['Database']))
-        {
-            $catToAdd = "Database: ";
-            for($i = 0; $i < count($privileges['Database']); $i++)
-            {
-                $catToAdd .= str_replace("_", " ", $privileges['Database'][$i]).", ";
-            }
-            $catToAdd = rtrim($catToAdd, ", ");
-            $privilegesStrings[] = $catToAdd;
-        }
-        if(isset($privileges['Table']))
-        {
-            $catToAdd = "Table: ";
-            for($i = 0; $i < count($privileges['Table']); $i++)
-            {
-                $catToAdd .= str_replace("_", " ", $privileges['Table'][$i]).", ";
+            // Check if category is empty, skipping category if so
+            if(sizeof($privileges) == 0) continue;
+
+            // Create and add string to privileges strings
+            $catToAdd = "$category: ";
+            for ($i = 0; $i < count($privileges); $i++) {
+                $catToAdd .= str_replace("_", " ", $privileges[$i]) . ", ";
             }
             $catToAdd = rtrim($catToAdd, ", ");
             $privilegesStrings[] = $catToAdd;
