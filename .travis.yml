@@ -50,10 +50,16 @@ after_success:
 stages:
   - test
   - deploy
-  - failable
 
 jobs:
-  # Jobs that must succeed for deployment to occur
+  # Specify jobs that are allowed to fail
+  allow_failures:
+    - stage: test
+      php: "nightly"
+      env: CI_MODE=test
+    - stage: test
+      php: "7.2"
+      env: CI_MODE=phpstan
   include:
     # Basic testing jobs
     - stage: test
@@ -91,6 +97,13 @@ jobs:
         - curl https://getcomposer.org/installer | php
         - ln -s "`pwd`/composer.phar" /usr/local/bin/composer
         - mysql.server start
+    # Failable testing jobs
+    - stage: test
+      php: "nightly"
+      env: CI_MODE=test
+    - stage: test
+      php: "7.2"
+      env: CI_MODE=phpstan
     # Deployment job
     - stage: deploy
       php: "7.2"
@@ -108,13 +121,7 @@ jobs:
         project: the-giganibbles-phpmyadmin
         on: 
           branch: working
-    # Jobs that can fail for the build to still succeed and deployment to occur
-    - stage: failable
-      php: "nightly"
-      env: CI_MODE=test
-    - stage: failable
-      php: "7.2"
-      env: CI_MODE=phpstan
+          
 cache:
   pip: true
   directories:
