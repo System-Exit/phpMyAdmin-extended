@@ -1,95 +1,113 @@
+# The Travis setup:
+# - run testsuite for every PHP version
+# - run lint for every PHP version
+# - run Selenium for single PHP version
+
 dist: trusty
+
 language: php
+
 services:
-- mysql
+  - mysql
+
 php:
-- '7.2'
-- '7.1'
-- nightly
+  - "7.2"
+  - "7.1"
+  - "nightly"
+
 sudo: required
+
 env:
   matrix:
-  - CI_MODE=test
+    - CI_MODE=test
   global:
-  - TESTSUITE_USER=root
-  - TESTSUITE_URL=http://127.0.0.1:8000
+    - TESTSUITE_USER=root
+    - TESTSUITE_URL=http://127.0.0.1:8000
 before_install:
-- ssh-keygen -q -N "" -f ~/.ssh/google_compute_engine
-- openssl aes-256-cbc -K $encrypted_93cd6078427b_key -iv $encrypted_93cd6078427b_iv
-  -in travis-gae-keyfile.json.enc -out travis-gae-keyfile.json -d
+    - ssh-keygen -q -N "" -f ~/.ssh/google_compute_engine
+    - openssl aes-256-cbc -K $encrypted_93cd6078427b_key -iv $encrypted_93cd6078427b_iv
+        -in travis-gae-keyfile.json.enc -out travis-gae-keyfile.json -d
+    
 install:
-- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then source ~/virtualenv/python3.6/bin/activate
-  ; fi
-- "./test/ci-install-$CI_MODE"
-- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then case "$TRAVIS_PHP_VERSION" in hhvm*) ;;
-  *) phpenv config-add test/php-noprofile.ini ;; esac ; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then source ~/virtualenv/python3.6/bin/activate ; fi
+  - ./test/ci-install-$CI_MODE
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then case "$TRAVIS_PHP_VERSION" in hhvm*) ;; *) phpenv config-add test/php-noprofile.ini ;; esac ; fi
+
 before_script:
-- export TESTSUITE_PASSWORD=`openssl rand -base64 30`
-- export TESTSUITE_BROWSERSTACK_KEY=`echo cHlDcHJTNmZwZjVlaUR2RmV6VkU= | base64 --decode`
-- export PATH=~/.composer/vendor/bin/:$PATH
-- mysql -uroot -e "CREATE DATABASE IF NOT EXISTS test"
-- mysql -uroot < sql/create_tables.sql
-- mysql -uroot -e "SET PASSWORD = PASSWORD('$TESTSUITE_PASSWORD')"
-- "./test/start-local-server"
+  - export TESTSUITE_PASSWORD=`openssl rand -base64 30`
+  - export TESTSUITE_BROWSERSTACK_KEY=`echo cHlDcHJTNmZwZjVlaUR2RmV6VkU= | base64 --decode`
+  - export PATH=~/.composer/vendor/bin/:$PATH
+  - mysql -uroot -e "CREATE DATABASE IF NOT EXISTS test"
+  - mysql -uroot < sql/create_tables.sql
+  - mysql -uroot -e "SET PASSWORD = PASSWORD('$TESTSUITE_PASSWORD')"
+  - ./test/start-local-server
+
 script:
-- "./scripts/generate-mo --quiet"
-- if [ $CI_MODE = test ] ; then ./test/ci-phplint ; fi
-- "./test/ci-$CI_MODE"
+  - ./scripts/generate-mo --quiet
+  - if [ $CI_MODE = test ] ; then ./test/ci-phplint ; fi
+  - ./test/ci-$CI_MODE
+
 after_script:
-- if [ -f vendor/bin/codacycoverage ] ; then php vendor/bin/codacycoverage clover
-  || true ; fi
-- if [ -f php.log ] ; then cat php.log ; fi
-- if [ -f nginx-error.log ] ; then cat nginx-error.log ; fi
-- if [ -f build/logs/phpunit.json ] ; then ./scripts/phpunit-top-tests build/logs/phpunit.json
-  ; fi
-- if [ -f config.inc.php ] ; then rm -rf config.inc.php; fi
+  - if [ -f vendor/bin/codacycoverage ] ; then php vendor/bin/codacycoverage clover || true ; fi
+  - if [ -f php.log ] ; then cat php.log ; fi
+  - if [ -f nginx-error.log ] ; then cat nginx-error.log ; fi
+  - if [ -f build/logs/phpunit.json ] ; then ./scripts/phpunit-top-tests build/logs/phpunit.json ; fi
+  - if [ -f config.inc.php ] ; then rm -rf config.inc.php; fi
+
 after_success:
-- bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
+
 matrix:
   fast_finish: true
   include:
-  - php: '7.1'
-    env: CI_MODE=selenium
-  - php: '7.1'
-    env: CI_MODE=lint
-  - php: '7.1'
-    env: CI_MODE=release
-  - php: '7.1'
-    env: CI_MODE=docs
-  - php: '7.1'
-    env: CI_MODE=apidocs
-  - php: '7.2'
-    env: CI_MODE=phpstan
-  - os: osx
-    language: generic
-    env: CI_MODE=test
-    before_install:
-    - brew update
-    - brew install gettext php72 mariadb
-    - brew link --force gettext
-    - sed -i -e 's/^memory_limit = .*/memory_limit = -1/' /usr/local/etc/php/7.2/php.ini
-    - curl https://getcomposer.org/installer | php
-    - ln -s "`pwd`/composer.phar" /usr/local/bin/composer
-    - mysql.server start
+    - php: "7.1"
+      env: CI_MODE=selenium
+    - php: "7.1"
+      env: CI_MODE=lint
+    - php: "7.1"
+      env: CI_MODE=release
+    - php: "7.1"
+      env: CI_MODE=docs
+    - php: "7.1"
+      env: CI_MODE=apidocs
+    - php: "7.2"
+      env: CI_MODE=phpstan
+    - os: osx
+      language: generic
+      env: CI_MODE=test
+      before_install:
+        - brew update
+        - brew install gettext php72 mariadb
+        - brew link --force gettext
+        - sed -i -e 's/^memory_limit = .*/memory_limit = -1/' /usr/local/etc/php/7.2/php.ini
+        - curl https://getcomposer.org/installer | php
+        - ln -s "`pwd`/composer.phar" /usr/local/bin/composer
+        - mysql.server start
   allow_failures:
-  - php: nightly
-    env: CI_MODE=test
-  - php: '7.2'
-    env: CI_MODE=phpstan
+    - php: "nightly"
+      env: CI_MODE=test
+    - php: "7.2"
+      env: CI_MODE=phpstan
+
 cache:
   pip: true
   directories:
-  - "$HOME/.composer/cache/"
-  - "$HOME/browserstack"
+    - $HOME/.composer/cache/
+    - $HOME/browserstack
+# Install APT packages
+#  - git > 2.5.1 needed for worktrees
+#  - mysql server does not seem to be always present on Travis Trusty environment
 addons:
   apt:
     packages:
     - git
     - mysql-server-5.6
     - nginx
-deploy:
-  provider: gae
-  skip_cleanup: true
-  keyfile: travis-gae-keyfile.json
-  project: the-giganibbles-phpmyadmin
-  on: working
+
+# Commented out until we can stop it running after every build job
+#deploy:
+#  provider: gae
+#  skip_cleanup: true
+#  keyfile: travis-gae-keyfile.json
+#  project: the-giganibbles-phpmyadmin
+#  on: working
