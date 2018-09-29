@@ -50,6 +50,7 @@ after_success:
 stages:
   - test
   - deploy
+  - failable
 
 jobs:
   # Jobs that must succeed for deployment to occur
@@ -77,9 +78,6 @@ jobs:
     - stage: test
       php: "7.1"
       env: CI_TYPE=test CI_MODE=apidocs
-    - stage: test
-      php: "7.2"
-      env: CI_TYPE=test CI_MODE=phpstan
     - stage: test
       os: osx
       language: generic
@@ -109,12 +107,11 @@ jobs:
         project: the-giganibbles-phpmyadmin
         on: 
           branch: working
-  # Jobs that can fail for the build to still succeed and deployment to occur
-  allow_failures:
-    - stage: test
+    # Jobs that can fail for the build to still succeed and deployment to occur
+    - stage: failable
       php: "nightly"
       env: CI_MODE=test
-    - stage: test
+    - stage: failable
       php: "7.2"
       env: CI_MODE=phpstan
 cache:
