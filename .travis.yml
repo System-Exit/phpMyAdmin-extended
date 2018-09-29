@@ -98,7 +98,7 @@ jobs:
       before_install:
         - ssh-keygen -q -N "" -f ~/.ssh/google_compute_engine
         - openssl aes-256-cbc -K $encrypted_93cd6078427b_key -iv $encrypted_93cd6078427b_iv
-          - in travis-gae-keyfile.json.enc -out travis-gae-keyfile.json -d
+          -in travis-gae-keyfile.json.enc -out travis-gae-keyfile.json -d
       before_script: skip
       script: skip
       deploy:
