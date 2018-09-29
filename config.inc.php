@@ -1,22 +1,26 @@
 <?php
-/*
+/**
+ * Configuration file for GAE deployment
+ */
+
+/**
  * This is needed for cookie based authentication to encrypt password in
  * cookie
  */
 $cfg['blowfish_secret'] = 'HereLiesAngusShceidAndCharlotteDawsonMayTheyRestInPeaceForAllOfEternity';
 
-/*
+/**
  * Servers configuration
  */
 $i = 0;
 
-/*
+/**
  * First server
  */
 $i++;
 
 /* Authentication type and info */
-/* $cfg['Servers'][$i]['auth_type'] = 'cookie'; */
+//$cfg['Servers'][$i]['auth_type'] = 'cookie';
 $cfg['Servers'][$i]['auth_type'] = 'http';
 $cfg['Servers'][$i]['user'] = '';
 $cfg['Servers'][$i]['password'] = '';
@@ -25,7 +29,7 @@ $cfg['Servers'][$i]['AllowNoPassword'] = true;
 $cfg['PersistentConnections'] = true;
 
 /* Set up server socket to SQL database */
-/*$cfg['Servers'][$i]['host'] = 'localhost';*/
+//$cfg['Servers'][$i]['host'] = 'localhost';
 $cfg['Servers'][$i]['socket'] = '/cloudsql/the-giganibbles-phpmyadmin:australia-southeast1:the-giganibbles-mysql';
 $cfg['Servers'][$i]['compress'] = false;
 
@@ -57,15 +61,15 @@ $cfg['Servers'][$i]['export_templates'] = 'pma__export_templates';
 $cfg['Servers'][$i]['favorite'] = 'pma__favorite';
 $cfg['Servers'][$i]['messages'] = 'pma__messages';
 
-/*
-* Other settings
+/**
+ * Other settings
  */
 $cfg['PmaNoRelation_DisableWarning'] = true;
 $cfg['ExecTimeLimit'] = 6000;
 $cfg['CheckConfigurationPermissions'] = false;
-/*$cfg['LoginCookieStore'] = 120;*/
+//$cfg['LoginCookieStore'] = 120;
 
-/*
+/**
  * End of servers configuration
  */
 
