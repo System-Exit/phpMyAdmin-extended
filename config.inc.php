@@ -1,6 +1,8 @@
 <?php
 /**
  * Configuration file for GAE deployment
+ *
+ * @package PhpMyAdmin
  */
 
 /**
