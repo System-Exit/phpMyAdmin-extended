@@ -79,6 +79,7 @@ jobs:
       php: "7.1"
       env: CI_TYPE=test CI_MODE=apidocs
     - stage: test
+      php: "7.2"
       os: osx
       language: generic
       env: CI_TYPE=test CI_MODE=test
