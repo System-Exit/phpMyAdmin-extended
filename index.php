@@ -22,6 +22,7 @@ use PhpMyAdmin\ThemeManager;
 use PhpMyAdmin\Url;
 use PhpMyAdmin\Util;
 use PhpMyAdmin\UserPreferences;
+use \PhpMyAdmin\Controllers\Giganibbles\ServerUserStatsController;
 
 /**
  * Gets some core libraries and displays a top message if required
@@ -674,3 +675,8 @@ if (@file_exists('libraries/language_stats.inc.php')) {
         );
     }
 }
+
+/**
+ * Incrementation of index page visits if user is logged in
+ */
+ServerUserStatsController::incrementPageView("index");

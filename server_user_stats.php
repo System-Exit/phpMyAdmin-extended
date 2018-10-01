@@ -39,3 +39,8 @@ $controller = $container->get(
     []
 );
 $controller->indexAction();
+
+/**
+ * Incrementation of statistics page visits if user is logged in
+ */
+ServerUserStatsController::incrementPageView("user_stats");
