@@ -56,6 +56,7 @@ var PMA_console = {
      * @return void
      */
     initialize: function () {
+        return;
         if ($('#pma_console').length === 0) {
             return;
         }
