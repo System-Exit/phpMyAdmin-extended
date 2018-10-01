@@ -371,3 +371,19 @@ CREATE TABLE IF NOT EXISTS `pma__messages` (
 )
   COMMENT='Messages storage for messages system'
   DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+
+  -- --------------------------------------------------------
+
+--
+-- Table structure for table `pma__user_statistics`
+--
+
+CREATE TABLE IF NOT EXISTS `pma__userstats` (
+  `user` varchar(255) NOT NULL,
+  `index_page_views` integer NOT NULL DEFAULT 0,
+  `messages_page_views` integer NOT NULL DEFAULT 0,
+  `user_stats_page_views` integer NOT NULL DEFAULT 0,
+  PRIMARY KEY (`user`)
+)
+  COMMENT='Statistics for users'
+  DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;

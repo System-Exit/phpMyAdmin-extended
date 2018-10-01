@@ -48,9 +48,7 @@ class ServerUserStatsController extends Controller
             'mysql'     => $this->getUserMySqlPrivs($user, $host)
         ];
         // Get user usage statistics
-        $usage_list = [
-            ['type' => 'None', 'value' => 'None']
-        ];
+        $usage_list = $this->getUserUsage($user);
 
         $this->response->addHTML($this->template->render(
             'Giganibbles/server_user_stats',
@@ -72,11 +70,12 @@ class ServerUserStatsController extends Controller
     private function getUserMySqlPrivs($user, $host) : array {
         $relation = new Relation();
 
-        // Get the permissions for the user
+        // Get the permissions for the user, also checking for user with '%' host
         $query = "SELECT * "
             . "FROM mysql.user "
             . "WHERE user = '$user' "
-            . "AND host = '$host'; ";
+            . "AND host = '$host' "
+            . "OR host = '%'; ";
         $result = $relation->queryAsControlUser($query);
 
         // Parse through all permissions and add them to categories
@@ -281,5 +280,100 @@ class ServerUserStatsController extends Controller
             }
         }
         return $output;
+    }
+
+    /**
+     * Access usages statistics for specified user from userstats table
+     *
+     * @param string $user Username of user to get usage statistics for
+     *
+     * @return array Array of usage statistics in the form of 'type'/'value' pairs
+     */
+    private function getUserUsage($user)
+    {
+        $relation = new Relation();
+        $usage = [];
+
+        // Get all usage statistics
+        $query = "SELECT * "
+            . "FROM `phpmyadmin`.`pma__userstats` "
+            . "WHERE user = '$user';";
+        $result = $relation->queryAsControlUser($query);
+        $row = $result->fetch_assoc();
+
+        // Build array of page view stats
+        foreach($row as $type => $value)
+        {
+            // Don't include username
+            if($type == "user") continue;
+
+            // Add usage type and value to array
+            $type = str_replace("_", " ", $type);
+            $usage[] = ['type' => $type, 'value' => $value];
+        }
+
+        return $usage;
+    }
+
+    /**
+     * Method for recording a given page visit for current user
+     *
+     * @param string $page Name of page to increment view count for
+     *
+     * @return bool Whether or not the recording was successful
+     */
+    static public function incrementPageView($page)
+    {
+        global $cfg;
+        $relation = new Relation();
+
+        $user = $cfg['Server']['user'];
+        $statistic_name = $page . "_page_views";
+
+        // Check if user exists in statistics
+        ServerUserStatsController::verifyUserStatsIsRecorded($user);
+
+        // Check that given page statistic exists, returning false if not
+        $query = "SHOW COLUMNS "
+            . "FROM `phpmyadmin`.`pma__userstats` "
+            . "LIKE '$statistic_name';";
+        $result = $relation->queryAsControlUser($query);
+        if($result->num_rows == 0) return false;
+
+        // Increment page views value
+        $query = "UPDATE `phpmyadmin`.`pma__userstats` "
+            . "SET $statistic_name = $statistic_name + 1 "
+            . "WHERE user = '$user';";
+        $relation->queryAsControlUser($query);
+
+        // Return success
+        return true;
+    }
+
+    /**
+     * Checks if user exists in statistics page, creating an entry for them if not
+     *
+     * @param string $user Username of user to check is in stats table
+     *
+     * @return void
+     */
+    static private function verifyUserStatsIsRecorded($user)
+    {
+        $relation = new Relation();
+
+        // Check if user exists in statistics
+        $query = "SELECT * "
+            . "FROM `phpmyadmin`.`pma__userstats` "
+            . "WHERE user = '$user';";
+        $result = $relation->queryAsControlUser($query);
+
+        // Create an entry for the user they were not found in statistics
+        if($result->num_rows == 0)
+        {
+            $query = "INSERT INTO `phpmyadmin`.`pma__userstats` (user) VALUES ('$user');";
+            $relation->queryAsControlUser($query);
+        }
+        // Simply return if the user is already recorded in statistics
+        else return;
     }
 }

@@ -20,6 +20,7 @@ declare(strict_types=1);
 use PhpMyAdmin\Response;
 use PhpMyAdmin\Di\Container;
 use PhpMyAdmin\Controllers\Giganibbles\ServerMessagesController;
+use PhpMyAdmin\Controllers\Giganibbles\ServerUserStatsController;
 
 /**
  * Does the common work
@@ -39,3 +40,8 @@ $controller = $container->get(
     []
 );
 $controller->indexAction();
+
+/**
+ * Incrementation of message page visits if user is logged in
+ */
+ServerUserStatsController::incrementPageView("messages");
