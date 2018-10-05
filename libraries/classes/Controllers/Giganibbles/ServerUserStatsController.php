@@ -8,11 +8,11 @@ declare(strict_types=1);
 
 namespace PhpMyAdmin\Controllers\Giganibbles;
 
-use phpDocumentor\Reflection\Types\Boolean;
 use PhpMyAdmin\Controllers\Controller;
 use PhpMyAdmin\Relation;
 use PhpMyAdmin\Response;
 use PhpMyAdmin\Message;
+use TCPDF;
 
 /**
  * Class ServerMessagesController
@@ -35,6 +35,13 @@ class ServerUserStatsController extends Controller
 
         $user = $cfg['Server']['user'];
         $host = $cfg['Server']['host'];
+
+        // Check if generating report, generate report for user if so
+        if(isset($_GET['export']))
+        {
+            $pdf = $this->generateUserStatReportPDF();
+            $pdf->Output('User_Report.pdf', 'D');
+        }
 
         // Get user information
         $info_list = [
@@ -375,5 +382,76 @@ class ServerUserStatsController extends Controller
         }
         // Simply return if the user is already recorded in statistics
         else return;
+    }
+
+    /**
+     * Exports statistics as a PDF report
+     * Builds the report using TCPDF
+     *
+     * @return TCPDF PDF report for user
+     */
+    public function generateUserStatReportPDF()
+    {
+        global $cfg;
+
+        $user = $cfg['Server']['user'];
+        $host = $cfg['Server']['host'];
+
+        // Construct PDF
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION,
+            PDF_UNIT,
+            PDF_PAGE_FORMAT,
+            true,
+            'UTF-8',
+            false);
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor("phpMyAdmin");
+        $pdf->SetTitle("Statistics report for $user");
+        $pdf->SetSubject("Statistics report");
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+        $pdf->setAutoPageBreak(true, 10);
+        $pdf->setFont('helvetica', '', 12);
+
+        // Create PDF page
+        $pdf->AddPage();
+
+        // Define style
+        $heading_Style = "text-decoration: underline;";
+        // Build HTML for report
+        $html = "<h1 style=\"$heading_Style\">Statistics report for " . $user . "</h1>";
+        $html .= "<br/>";
+        // User info section
+        $html .= "<h2>User Information</h2>";
+        $html .= "<p>Name: " . $user . "</p>";
+        $html .= "<p>Date Created: none</p>";
+        $html .= "<p>Server: " . $host . "</p>";
+        $html .= "<br/>";
+        // Permissions section
+        $html .= "<h2>User Permissions</h2>";
+        $html .= "<h3>PHP MY ADMIN:</h3>";
+        foreach($this->getUserPmaPrivs($user) as $row)
+        {
+            $html .= "<p>" . $row . "</p>";
+        }
+        $html .= "<h3>MYSQL:</h3>";
+        foreach($this->getUserMySqlPrivs($user, $host) as $row)
+        {
+            $html .= "<p>" . $row . "</p>";
+        }
+        $html .= "<br/>";
+        // Usage info section
+        $html .= "<h2>User usage statistics</h2>";
+        foreach($this->getUserUsage($user) as $statistic)
+        {
+            $html .= "<p>" . $statistic['type'] . ": " . $statistic['value'] . "</p>";
+        }
+
+        // Write HTML to PDF
+        $pdf->writeHTML($html, true, false, true, false, '');
+        $pdf->lastPage();
+
+        // Return PDF document
+        return $pdf;
     }
 }
