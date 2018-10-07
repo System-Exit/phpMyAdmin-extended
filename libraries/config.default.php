@@ -607,6 +607,13 @@ $cfg['Servers'][$i]['tracking_add_drop_table'] = true;
 $cfg['Servers'][$i]['tracking_add_drop_database'] = true;
 
 /**
+ * The directory to store all generated user reports
+ *
+ * @global string $cfg['Servers'][$i]['user_reports_directory']
+ */
+$cfg['Servers'][$i]['user_reports_directory'] = '';
+
+/**
  * Default server (0 = no default server)
  *
  * If you have more than one server configured, you can set $cfg['ServerDefault']

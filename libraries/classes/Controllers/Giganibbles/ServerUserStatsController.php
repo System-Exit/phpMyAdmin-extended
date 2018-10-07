@@ -39,8 +39,7 @@ class ServerUserStatsController extends Controller
         // Check if generating report, generate report for user if so
         if(isset($_GET['export']))
         {
-            $pdf = $this->generateUserStatReportPDF();
-            $pdf->Output('User_Report.pdf', 'D');
+            $this->generateUserStatReportPDF();
         }
 
         // Get user information
@@ -377,7 +376,7 @@ class ServerUserStatsController extends Controller
         // Create an entry for the user they were not found in statistics
         if($result->num_rows == 0)
         {
-            $query = "INSERT INTO `phpmyadmin`.`pma__userstats` (user) VALUES ('$user');";
+            $query = "INSERT INTO `phpmyadmin`.`pma__userstats` ('user') VALUES ('$user');";
             $relation->queryAsControlUser($query);
         }
         // Simply return if the user is already recorded in statistics
@@ -388,14 +387,35 @@ class ServerUserStatsController extends Controller
      * Exports statistics as a PDF report
      * Builds the report using TCPDF
      *
-     * @return TCPDF PDF report for user
+     * @return void
+     * @throws \Exception When save directory isn't defined or cant be accessed
      */
     public function generateUserStatReportPDF()
     {
         global $cfg;
+        $this->response;
 
         $user = $cfg['Server']['user'];
         $host = $cfg['Server']['host'];
+        $save_dir = $cfg['Server']['user_reports_directory'];
+
+        // Check if save directory is set and can be accessed
+        // Display errors and return if either is true
+        if($save_dir == '')
+        {
+            $msg = Message::ERROR(__("Directory to save reports has not been defined. "
+                . "You can do so in the 'config.inc.php' file."));
+            $this->response->setRequestStatus(false);
+            $this->response->addJSON('message', $msg);
+            return;
+        }
+        else if(!is_writable($save_dir))
+        {
+            $msg = Message::ERROR(__("Directory for saving reports is not writable."));
+            $this->response->setRequestStatus(false);
+            $this->response->addJSON('message', $msg);
+            return;
+        }
 
         // Construct PDF
         $pdf = new TCPDF(PDF_PAGE_ORIENTATION,
@@ -408,6 +428,8 @@ class ServerUserStatsController extends Controller
         $pdf->SetAuthor("phpMyAdmin");
         $pdf->SetTitle("Statistics report for $user");
         $pdf->SetSubject("Statistics report");
+        $pdf->setHeaderData('', '', PDF_HEADER_TITLE, PDF_HEADER_STRING);
+        $pdf->setFooterData('', '');
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
         $pdf->setAutoPageBreak(true, 10);
@@ -415,43 +437,57 @@ class ServerUserStatsController extends Controller
 
         // Create PDF page
         $pdf->AddPage();
-
         // Define style
         $heading_Style = "text-decoration: underline;";
         // Build HTML for report
-        $html = "<h1 style=\"$heading_Style\">Statistics report for " . $user . "</h1>";
-        $html .= "<br/>";
+        $content = "<h1 style=\"{$heading_Style}\">Statistics report for {$user}</h1>";
+        $content .= "<br/>";
         // User info section
-        $html .= "<h2>User Information</h2>";
-        $html .= "<p>Name: " . $user . "</p>";
-        $html .= "<p>Date Created: none</p>";
-        $html .= "<p>Server: " . $host . "</p>";
-        $html .= "<br/>";
+        $content .= "<h2>User Information</h2>";
+        $content .= "<p>Name: {$user}</p>";
+        $content .= "<p>Date Created: none</p>";
+        $content .= "<p>Server: {$host}</p>";
+        $content .= "<br/>";
         // Permissions section
-        $html .= "<h2>User Permissions</h2>";
-        $html .= "<h3>PHP MY ADMIN:</h3>";
+        $content .= "<h2>User Permissions</h2>";
+        $content .= "<h3>PHP MY ADMIN:</h3>";
         foreach($this->getUserPmaPrivs($user) as $row)
         {
-            $html .= "<p>" . $row . "</p>";
+            $content .= "<p>{$row}</p>";
         }
-        $html .= "<h3>MYSQL:</h3>";
+        $content .= "<h3>MYSQL:</h3>";
         foreach($this->getUserMySqlPrivs($user, $host) as $row)
         {
-            $html .= "<p>" . $row . "</p>";
+            $content .= "<p>{$row}</p>";
         }
-        $html .= "<br/>";
+        $content .= "<br/>";
         // Usage info section
-        $html .= "<h2>User usage statistics</h2>";
+        $content .= "<h2>User usage statistics</h2>";
         foreach($this->getUserUsage($user) as $statistic)
         {
-            $html .= "<p>" . $statistic['type'] . ": " . $statistic['value'] . "</p>";
+            $content .= "<p>{$statistic['type']}: {$statistic['value']}</p>";
         }
 
         // Write HTML to PDF
-        $pdf->writeHTML($html, true, false, true, false, '');
-        $pdf->lastPage();
+        $pdf->writeHTML($content);
+        $pdf->Close();
 
-        // Return PDF document
-        return $pdf;
+        // Have PDF generated and stored in specified location with generated name
+        // TODO: Get downloading of file working
+        $save_path = "{$save_dir}/{$user}_statistic_report.pdf";
+        if($pdf->Output($save_path, 'F') == '')
+        {
+            $msg = Message::SUCCESS(__("Report saved in {$save_dir}"));
+            $this->response->setRequestStatus(false);
+            $this->response->addJSON('message', $msg);
+        }
+        else
+        {
+            $msg = Message::ERROR(__("Report failed to save in {$save_dir}"));
+            $this->response->setRequestStatus(false);
+            $this->response->addJSON('message', $msg);
+        }
+
+        return;
     }
 }
