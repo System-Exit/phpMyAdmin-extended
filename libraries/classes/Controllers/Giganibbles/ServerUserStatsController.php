@@ -370,7 +370,7 @@ class ServerUserStatsController extends Controller
         // Create an entry for the user they were not found in statistics
         if($result->num_rows == 0)
         {
-            $query = "INSERT INTO `phpmyadmin`.`pma__userstats` (user) VALUES ('$user');";
+            $query = "INSERT INTO `phpmyadmin`.`pma__userstats` (`user`) VALUES ('$user');";
             $relation->queryAsControlUser($query);
         }
         // Simply return if the user is already recorded in statistics
