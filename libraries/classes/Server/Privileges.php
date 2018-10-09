@@ -5872,9 +5872,8 @@ class Privileges
         $relation = new Relation();
 
         // Query for user groups
-        $groupQuery = "SELECT usergroup, tab, allowed "
-            . "FROM phpMyAdmin.pma__usergroups "
-            . "WHERE 1;";
+        $groupQuery = "SELECT `usergroup`, `tab`, `allowed` "
+            . "FROM `phpMyAdmin`.`pma__usergroups`;";
         $groupResult = $relation->queryAsControlUser($groupQuery);
         $groupText = "INSERT INTO `phpmyadmin`.`pma__usergroups` (`usergroup`, `tab`, `allowed`) VALUES\n";
         while($row = $groupResult->fetch_assoc())
@@ -5887,9 +5886,8 @@ class Privileges
         $groupText = substr_replace($groupText, ";", strrpos($groupText, ","), 1);
 
         // Query for users in user groups
-        $userQuery = "SELECT usergroup, username "
-            . "FROM phpMyAdmin.pma__users "
-            . "WHERE 1;";
+        $userQuery = "SELECT `usergroup`, `username` "
+            . "FROM `phpMyAdmin`.`pma__users`;";
         $userResult = $relation->queryAsControlUser($userQuery);
         $userText = "INSERT INTO `phpmyadmin`.`pma__users` (`usergroup`, `username`) VALUES\n";
         while($row = $userResult->fetch_assoc())
