@@ -113,21 +113,22 @@ class ImportJSON extends ImportPlugin
          * Note that each row of data has its own insert statement.
          * While less efficient than combined value insert, order may be manually
          * mixed, so separate statements are ideal to avoid issues with this.
-         *
-         * Also uses r
          */
-        $relation = new Relation();
-        foreach ($data as $sect) {
-            if ($sect["type"] == "table") {
+        foreach ($data as $sect)
+        {
+            if ($sect["type"] == "table")
+            {
                 $tableName = $sect["name"];
                 $tableDatabase = $sect["database"];
                 $tableData = $sect["data"];
-                foreach ($tableData as $row) {
+                foreach ($tableData as $row)
+                {
                     // Start of insert, specifies table
                     $query = "INSERT INTO `$tableDatabase`.`$tableName` (";
                     // Specifies the columns to insert data for
-                    foreach ($row as $key => $value) {
-                        $query .= "$key,";
+                    foreach ($row as $key => $value)
+                    {
+                        $query .= "`$key`, ";
                     }
                     $query = substr_replace(
                         $query,
@@ -135,9 +136,10 @@ class ImportJSON extends ImportPlugin
                         strrpos($query, ","),
                         1
                     );
-                    $query .= " VALUES(";
+                    $query .= "VALUES(";
                     // Specifies data values to insert
-                    foreach ($row as $value) {
+                    foreach ($row as $value)
+                    {
                         $query .= "'$value',";
                     }
                     $query = substr_replace(
@@ -146,9 +148,11 @@ class ImportJSON extends ImportPlugin
                         strrpos($query, ","),
                         1
                     );
-                    $query .= ";";
-                    $relation->queryAsControlUser($query, true);
+                    $query .= "; ";
+                    $this->import->runQuery($query, $query, $sql_data);
                 }
+                // Final run query to make last query actually run
+                $this->import->runQuery('', '', $sql_data);
             }
         }
 

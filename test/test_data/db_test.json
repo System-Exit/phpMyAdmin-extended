@@ -1,0 +1,9 @@
+[
+	{"type":"header","version":"5.0.0-dev","comment":"Export to JSON plugin for PHPMyAdmin"},
+	{"type":"database","name":"phpmyadmin"},
+	{"type":"table","name":"pma_bookmark","database":"phpmyadmin","data":
+	[
+		{"id":"1", "dbase":"pma_dbase", "user":"", "label":"pma_label", "query":"SELECT * FROM `db_content` WHERE 1"}
+	]
+	}
+]
