@@ -55,3 +55,6 @@ composer.lock
 /vendor/
 # NPM
 /node_modules/
+# others
+*.tmp
+!/*/*.tmp
