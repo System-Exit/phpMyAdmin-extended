@@ -75,6 +75,11 @@ class ServerMessagesController extends Controller
                 'messages' => []
             ]
         ));
+
+        /**
+         * Incrementation of message page visits if user is logged in
+         */
+        ServerUserStatsController::incrementPageView("messages");
     }
 
     /**

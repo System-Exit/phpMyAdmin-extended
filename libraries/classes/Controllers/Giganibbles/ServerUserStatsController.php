@@ -28,6 +28,7 @@ class ServerUserStatsController extends Controller
      * Handles actions to perform on loading the page
      *
      * @return void
+     * @throws \Exception
      */
     public function indexAction()
     {
@@ -41,6 +42,11 @@ class ServerUserStatsController extends Controller
         {
             $this->generateUserStatReportPDF();
         }
+
+        /**
+         * Incrementation of statistics page visits if user is logged in
+         */
+        ServerUserStatsController::incrementPageView("user_stats");
 
         // Get user information
         $info_list = [
