@@ -12,7 +12,7 @@ namespace PhpMyAdmin\Tests\Selenium;
  *
  * @package PhpMyAdmin\Tests\Selenium
  */
-class UserAccountsTest extends TestBase
+class UserStatisticsTest extends TestBase
 {
 
     /**
@@ -61,6 +61,7 @@ class UserAccountsTest extends TestBase
      */
     private function navigateToUserStatistics()
     {
+        $this->expandMore();
         $link = $this->waitForElement('byXPath', "//a[contains(@href, 'server_user_stats.php')]");
         $link->click();
         $this->waitAjax();
